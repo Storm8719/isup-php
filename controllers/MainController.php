@@ -42,6 +42,11 @@ class MainController extends \yii\web\Controller
         return $this->render('site', ['siteName' => $site]);
     }
 
+    public function actionGetWebsitesList(){
+        $sites = Sites::find()->select(['id', 'url'])->asArray()->all();
+        return $this->asJson($sites);
+    }
+
     public function actionRandom(){
         $site = new Sites();
         $site->url = 'random';

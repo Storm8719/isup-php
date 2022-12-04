@@ -30,9 +30,12 @@ AppAsset::register($this);
         <a href="/" class="header-logo">LOGO</a>
         <div class="header-menu">
             <form class="search-box">
-                <input type="text" placeholder="Search..."/>
+                <input type="text" placeholder="Search..." id="liveSearch"/>
                 <input type="submit" value="Search">
             </form>
+            <div class="results-box" id="resultBox">
+                <a href="#">Result</a>
+            </div>
         </div>
     </nav>
 </header>
