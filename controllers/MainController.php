@@ -4,6 +4,7 @@
 namespace app\controllers;
 
 
+use app\models\Sites;
 use Yii;
 
 class MainController extends \yii\web\Controller
@@ -23,7 +24,10 @@ class MainController extends \yii\web\Controller
             'name' => 'description',
             'content' => 'Description of the main page...'
         ]);
-        return $this->render('index');
+
+        $sites = Sites::find()->asArray()->limit(3)->all();
+
+        return $this->render('index', ['sites' => $sites]);
     }
 
     public function actionSite($site)
@@ -38,6 +42,14 @@ class MainController extends \yii\web\Controller
         return $this->render('site', ['siteName' => $site]);
     }
 
+    public function actionRandom(){
+        $site = new Sites();
+        $site->url = 'random';
+        $site->status = 0;
+        $site->created_at = time();
+        $site->save();
+        die("done new random website");
+    }
 
 
 }
