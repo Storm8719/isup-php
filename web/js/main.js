@@ -23,16 +23,31 @@ const initLiveSearch = async () => {
     const fuse = new Fuse(websites, {
         keys: ['url']
     });
+    renderLiveSearchResults(fuse.search(searchInput.value));
     ['keyup'].forEach((eventType) => {
         searchInput.addEventListener(eventType, () => {
             renderLiveSearchResults(fuse.search(searchInput.value));
         });
     })
+    searchInput.addEventListener('focus', () => {
+        renderLiveSearchResults(fuse.search(searchInput.value));
+    })
+    searchInput.addEventListener('focusout', () => {
+        setTimeout(()=> {
+            renderLiveSearchResults(null);
+        }, 100)
+    })
 }
 
 searchInput.addEventListener('focus', initLiveSearch)
 
+
 const renderLiveSearchResults = (results) => {
+
+    if(!results){
+        resultBox.innerHTML = '';
+        return false;
+    }
 
     const fragment = document.createDocumentFragment();
 

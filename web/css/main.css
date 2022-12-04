@@ -54,5 +54,31 @@ footer{
     display: flex;
     position: absolute;
     width: 260px;
+
+}
+.results{
+    display: flex;
     flex-direction: column;
+    width: 100%;
+    box-shadow: 0px 2px 4px 0px whitesmoke;
+    border: solid #dedede 1px;
+    border-top: none;
+    border-radius:0 0 10px 10px;
+    max-height: 150px;
+    overflow: auto;
+}
+.results-box a{
+    background: #fff;
+    color: black;
+    text-decoration: none;
+    padding: 10px;
+    border-bottom: solid #dedede 1px;
+}
+.results-box a:last-child{
+    border-bottom: none;
+}
+
+.results-box a:hover{
+    background: #add4ff;
+    border-bottom: solid #add4ff 1px;
 }

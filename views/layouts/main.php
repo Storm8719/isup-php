@@ -33,8 +33,8 @@ AppAsset::register($this);
                 <input type="text" placeholder="Search..." id="liveSearch"/>
                 <input type="submit" value="Search">
             </form>
-            <div class="results-box" id="resultBox">
-                <a href="#">Result</a>
+            <div class="results-box">
+                <div class="results" id="resultBox"></div>
             </div>
         </div>
     </nav>
