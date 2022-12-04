@@ -1,5 +1,6 @@
 <?php
 /** @var yii\web\View $this */
+
 /** @var string $content */
 
 use app\assets\AppAsset;
@@ -16,7 +17,7 @@ AppAsset::register($this);
     <title><?php echo Html::encode($this->title) ?></title>
     <meta charset="<?= Yii::$app->charset ?>">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<!--    --><?php //$this->registerCsrfMetaTags() ?>
+    <!--    --><?php //$this->registerCsrfMetaTags() ?>
     <?php $this->head() ?>
 </head>
 
@@ -25,17 +26,28 @@ AppAsset::register($this);
 
 
 <header>
-    <nav>
-        Navbar
+    <nav class="container">
+        <a href="/" class="header-logo">LOGO</a>
+        <div class="header-menu">
+            <form class="search-box">
+                <input type="text" placeholder="Search..."/>
+                <input type="submit" value="Search">
+            </form>
+        </div>
     </nav>
 </header>
 
-<main class="main-content">
-    <?php echo $content ?>
+<main>
+    <div class="container main-content">
+        <?php echo $content ?>
+    </div>
+
 </main>
 
 <footer>
-    Footer
+    <div class="container">
+        Footer
+    </div>
 </footer>
 
 

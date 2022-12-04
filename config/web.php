@@ -47,6 +47,7 @@ $config = [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
             'rules' => [
+                'check/<site:((\w+|\d+).\w+)>' => 'main/site'
             ],
         ],
     ],
