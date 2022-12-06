@@ -64,7 +64,7 @@ footer{
     border: solid #dedede 1px;
     border-top: none;
     border-radius:0 0 10px 10px;
-    max-height: 150px;
+    max-height: 300px;
     overflow: auto;
 }
 .results-box a{

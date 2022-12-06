@@ -6,6 +6,7 @@ namespace app\controllers;
 
 use app\models\Sites;
 use Yii;
+use yii\helpers\HtmlPurifier;
 
 class MainController extends \yii\web\Controller
 {
@@ -32,13 +33,23 @@ class MainController extends \yii\web\Controller
 
     public function actionSite($site)
     {
-        Yii::$app->view->title = $site;
-        Yii::$app->view->registerMetaTag([
-            'name' => 'description',
-            'content' => 'Description of the main page...'
-        ]);
-//        $res = preg_match("/^(?!\-)(?:[a-zA-Z\d\-]{0,62}[a-zA-Z\d]\.){1,126}(?!\d+)[a-zA-Z\d]{1,63}$/", $site);
 
+        if(!filter_var('https://'.$site, FILTER_VALIDATE_URL, [FILTER_FLAG_HOST_REQUIRED])){
+            return $this->render('incorrect_input', ['siteName' => $site]);
+        }
+
+        $websiteModel = Sites::findOne(['url' => $site]);
+
+        if(!$websiteModel){
+            (new Sites())->createWebsite($site);
+            //TODO add logic for checking new website immediately and return page with result for user
+        }
+
+        Yii::$app->view->title = HtmlPurifier::process("Сайт $site работает сегодня?");
+        Yii::$app->view->registerMetaTag([
+            'name' => HtmlPurifier::process("Узнайте, доступен ли сегодня сайт $site в России?"),
+            'content' => 'Description of the site page...'
+        ]);
         return $this->render('site', ['siteName' => $site]);
     }
 
@@ -48,11 +59,7 @@ class MainController extends \yii\web\Controller
     }
 
     public function actionRandom(){
-        $site = new Sites();
-        $site->url = 'random';
-        $site->status = 0;
-        $site->created_at = time();
-        $site->save();
+        (new Sites())->createRandomWebsite();
         die("done new random website");
     }
 
