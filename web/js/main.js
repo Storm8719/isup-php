@@ -1,4 +1,4 @@
-const websitesInfoPath = '/check/'
+const websitesInfoPath = '/site/'
 
 const liveSearchLogic = () => {
     const searchInput = document.getElementById('liveSearch');

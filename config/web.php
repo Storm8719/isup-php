@@ -43,14 +43,16 @@ $config = [
             ],
         ],
         'db' => $db,
+
         'urlManager' => [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
             'rules' => [
-                'check/<site:((\w+|\d+|.)+\w+)>' => 'main/site'
+                'site/<site:((\w+|\d+|.)+\w+)>' => 'main/site'
             ],
         ],
     ],
+    'defaultRoute' => 'main',
     'params' => $params,
 ];
 

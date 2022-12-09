@@ -47,8 +47,8 @@ class MainController extends \yii\web\Controller
 
         Yii::$app->view->title = HtmlPurifier::process("Сайт $site работает сегодня?");
         Yii::$app->view->registerMetaTag([
-            'name' => HtmlPurifier::process("Узнайте, доступен ли сегодня сайт $site в России?"),
-            'content' => 'Description of the site page...'
+            'name' => 'description',
+            'content' => HtmlPurifier::process("Узнайте, доступен ли сегодня сайт $site в России?")
         ]);
         return $this->render('site', ['siteName' => $site]);
     }
