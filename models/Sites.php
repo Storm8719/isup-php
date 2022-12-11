@@ -9,8 +9,10 @@ use Yii;
  *
  * @property int $id
  * @property string $url
+ * @property string|null $scheme
  * @property int $status
  * @property string|null $header
+ * @property string|null $title
  * @property string|null $description
  * @property int|null $last_http_code
  * @property int|null $ttfb
@@ -41,7 +43,7 @@ class Sites extends \yii\db\ActiveRecord
         return [
             [['url', 'status', 'created_at'], 'required'],
             [['status', 'last_http_code', 'ttfb', 'pagesize', 'is_need_check_flag', 'created_by', 'created_at', 'updated_at'], 'integer'],
-            [['header', 'description', 'info', 'additional_content', 'image_url'], 'string'],
+            [['header', 'description', 'info', 'additional_content', 'image_url', 'scheme', 'title'], 'string'],
             [['url'], 'string', 'max' => 255],
         ];
     }
@@ -54,8 +56,10 @@ class Sites extends \yii\db\ActiveRecord
         return [
             'id' => Yii::t('app', 'ID'),
             'url' => Yii::t('app', 'Url'),
+            'scheme' => Yii::t('app', 'Scheme'),
             'status' => Yii::t('app', 'Status'),
             'header' => Yii::t('app', 'Header'),
+            'title' => Yii::t('app', 'Title'),
             'description' => Yii::t('app', 'Description'),
             'last_http_code' => Yii::t('app', 'Last Http Code'),
             'ttfb' => Yii::t('app', 'Ttfb'),
@@ -69,7 +73,13 @@ class Sites extends \yii\db\ActiveRecord
             'updated_at' => Yii::t('app', 'Updated At'),
         ];
     }
-
+    /*
+    status
+        -1 - invalid
+        0 - new
+        1 - checked, valid
+        2 -
+    */
     public function createRandomWebsite(){
         $this->url = 'random';
         $this->status = 0;
