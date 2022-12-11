@@ -55,11 +55,12 @@ class StartController extends \yii\console\Controller
 
     private function setFetchingResults(\RollingCurl\Request $request){
 
-        print_r($request->getResponseInfo());
-            die;
+        $responseInfo = $request->getResponseInfo();
 
         $websiteModel = $request->getExtraInfo()['model'];
-        $parser = new HtmlParser($request->getResponseText(), ($websiteModel->scheme ? $websiteModel->scheme.'://'.$websiteModel->url : 'https://'.$websiteModel->url));
+        $fullUrl = $websiteModel->scheme ? $websiteModel->scheme.'://'.$websiteModel->url : 'https://'.$websiteModel->url;
+        $parser = new HtmlParser($request->getResponseText(), $fullUrl);
+        $websiteModel->last_http_code = (int) $responseInfo['http_code'];
         $websiteModel->updated_at = time();
         $websiteModel->header = $parser->getTitle();
         $websiteModel->description = $parser->getDescription();
