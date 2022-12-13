@@ -19,6 +19,8 @@ use Yii;
  * @property int|null $pagesize
  * @property string|null $info
  * @property string|null $image_url
+ * @property string|null $is_image_setted
+ * @property string|null $image_url_options
  * @property string|null $additional_content
  * @property int|null $is_need_check_flag
  * @property int|null $created_by
@@ -65,6 +67,8 @@ class Sites extends \yii\db\ActiveRecord
             'ttfb' => Yii::t('app', 'Ttfb'),
             'pagesize' => Yii::t('app', 'Pagesize'),
             'info' => Yii::t('app', 'Info'),
+            'is_image_setted' => Yii::t('app', 'Is Image Setted'),
+            'image_url_options' => Yii::t('app', 'Image Url Options'),
             'image_url' => Yii::t('app', 'Image Url'),
             'additional_content' => Yii::t('app', 'Additional Content'),
             'is_need_check_flag' => Yii::t('app', 'Is Need Check Flag'),
