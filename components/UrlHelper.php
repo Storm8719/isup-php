@@ -17,7 +17,7 @@ class UrlHelper extends Component
 
     public function normalizeUrl($url, $reference){
 
-        $parsedUrl = $this->parseUrl($reference);
+        $parsedUrl = $this->parseUrl($url);
         if(!$parsedUrl)
             return false;
 

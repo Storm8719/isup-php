@@ -11,7 +11,7 @@ class HtmlParser
 
     public $htmlText = null;
     public $url = null;
-    protected $headTagHtml = null;
+    private $headTagHtml = null;
 
     public function __construct($html, $url)
     {
@@ -24,7 +24,7 @@ class HtmlParser
         $this->setHeadTagHtml();
     }
 
-    public function getFaviconUrl(){
+    public function getFaviconUrlCandidatesArray(){
         return $this->getFaviconFromHtml();
     }
 
@@ -43,6 +43,8 @@ class HtmlParser
 
     private function getFaviconFromHtml()
     {
+        $possibleCandidates = [];
+
         $svgFaviconPattern = '
   ~<\s*link\s
     (?=[^>]*?
@@ -57,49 +59,41 @@ class HtmlParser
 
         if(preg_match($svgFaviconPattern, $this->headTagHtml, $svg)){
             $url = Yii::$app->urlHelper->normalizeUrl($svg[1], $this->url);
-            if($this->isImageUrlCheck($url)){
-                return $url;
-            }
+            $possibleCandidates[] = $url;
         }
 
         preg_match_all('~<link.*?rel=".*?icon".*?>~is', $this->headTagHtml, $linksMatches);
-//        $tempFavicons = [];
 
         foreach ($linksMatches[0] as $linkTag) {
 
             if (preg_match('/sizes=.*?(?:(?:\d{3,}|[6-9]\d)x(?:\d{3,}|[6-9]\d)|.*?any.*?)/', $linkTag, $res)) {
-//                echo $linkTag;
                 preg_match('/href="(.*?)"/', $linkTag, $match);
-//                echo $match[1].PHP_EOL;
                 $url = Yii::$app->urlHelper->normalizeUrl($match[1], $this->url);
-//                echo $url.PHP_EOL.PHP_EOL;
-
-                if($this->isImageUrlCheck($url)){
-                    return $url;
-                }
+                $possibleCandidates[] = $url;
+            }elseif(preg_match('/href="(.*?)"/', $linkTag, $match)){
+                $url = Yii::$app->urlHelper->normalizeUrl($match[1], $this->url);
+                $possibleCandidates[] = $url;
             }
-//            else{
-//                $tempFavicons[] = $linkTag;
-//            }
         }
-        return "no_favicon_found";
+
+        return $possibleCandidates;
     }
 
-    protected function isImageUrlCheck($url){
+//    private function isImageUrlCheck($url){
+//
+//
+//
+//        $client = new \GuzzleHttp\Client();
+//        try{
+//            $response = $client->request('GET', $url);
+//        } catch (GuzzleException $e) {
+//            echo "error on isImageUrlCheck url ".$url;
+//            return false;
+//        }
+//        return ($response->getStatusCode() == 200 && preg_match('/.*?image.*?/', $response->getHeaderLine('content-type'), $m));
+//    }
 
-
-
-        $client = new \GuzzleHttp\Client();
-        try{
-            $response = $client->request('GET', $url);
-        } catch (GuzzleException $e) {
-            echo "error on isImageUrlCheck url ".$url;
-            return false;
-        }
-        return ($response->getStatusCode() == 200 && preg_match('/.*?image.*?/', $response->getHeaderLine('content-type'), $m));
-    }
-
-    protected function getDescriptionFromHtml(){
+    private function getDescriptionFromHtml(){
         $pattern = '
   ~<\s*meta\s
 
