@@ -53,6 +53,11 @@ class MainController extends \yii\web\Controller
         return $this->render('site', ['siteName' => $site]);
     }
 
+    public function actionDelay(){
+        sleep(3);
+        return $this->actionIndex();
+    }
+
     public function actionGetWebsitesList(){
         $sites = Sites::find()->select(['id', 'url'])->asArray()->all();
         return $this->asJson($sites);

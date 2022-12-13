@@ -14,6 +14,9 @@ $config = [
         '@tests' => '@app/tests',
     ],
     'components' => [
+        'urlHelper' => [
+            'class' => 'app\components\UrlHelper',
+        ],
         'cache' => [
             'class' => 'yii\caching\FileCache',
         ],

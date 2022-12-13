@@ -4,6 +4,7 @@
 namespace app\commands;
 
 
+use app\components\UrlHelper;
 use app\models\HtmlParser;
 use app\models\Sites;
 use yii\console\ExitCode;
@@ -61,6 +62,7 @@ class StartController extends \yii\console\Controller
         $fullUrl = $websiteModel->scheme ? $websiteModel->scheme.'://'.$websiteModel->url : 'https://'.$websiteModel->url;
         $parser = new HtmlParser($request->getResponseText(), $fullUrl);
         $websiteModel->last_http_code = (int) $responseInfo['http_code'];
+        $websiteModel->ttfb = floatval($responseInfo['starttransfer_time']) * 1000; //ms
         $websiteModel->updated_at = time();
         $websiteModel->header = $parser->getTitle();
         $websiteModel->description = $parser->getDescription();

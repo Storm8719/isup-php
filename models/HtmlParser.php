@@ -3,7 +3,7 @@
 
 namespace app\models;
 
-
+use Yii;
 use GuzzleHttp\Exception\GuzzleException;
 
 class HtmlParser
@@ -36,12 +36,12 @@ class HtmlParser
         return $this->getTitleFromHtml();
     }
 
-    protected function setHeadTagHtml(){
+    private function setHeadTagHtml(){
         preg_match('~<head.*?>(.*?)</head>~is', $this->htmlText, $headHtml);
         $this->headTagHtml = isset($headHtml[0]) ? $headHtml[0] : null;
     }
 
-    protected function getFaviconFromHtml()
+    private function getFaviconFromHtml()
     {
         $svgFaviconPattern = '
   ~<\s*link\s
@@ -56,22 +56,24 @@ class HtmlParser
   ~ix';
 
         if(preg_match($svgFaviconPattern, $this->headTagHtml, $svg)){
-//            var_dump($svg[1]);
-//            return $svg[1];
-            $url = $this->normalizeUrl($svg[1]);
+            $url = Yii::$app->urlHelper->normalizeUrl($svg[1], $this->url);
             if($this->isImageUrlCheck($url)){
                 return $url;
             }
         }
 
         preg_match_all('~<link.*?rel=".*?icon".*?>~is', $this->headTagHtml, $linksMatches);
-        $tempFavicons = [];
+//        $tempFavicons = [];
 
         foreach ($linksMatches[0] as $linkTag) {
 
             if (preg_match('/sizes=.*?(?:(?:\d{3,}|[6-9]\d)x(?:\d{3,}|[6-9]\d)|.*?any.*?)/', $linkTag, $res)) {
-                preg_match('/href="(.+)"/', $linkTag, $match);
-                $url = $this->normalizeUrl($match[1]);
+//                echo $linkTag;
+                preg_match('/href="(.*?)"/', $linkTag, $match);
+//                echo $match[1].PHP_EOL;
+                $url = Yii::$app->urlHelper->normalizeUrl($match[1], $this->url);
+//                echo $url.PHP_EOL.PHP_EOL;
+
                 if($this->isImageUrlCheck($url)){
                     return $url;
                 }
@@ -95,25 +97,6 @@ class HtmlParser
             return false;
         }
         return ($response->getStatusCode() == 200 && preg_match('/.*?image.*?/', $response->getHeaderLine('content-type'), $m));
-    }
-
-    public function normalizeUrl($url){
-        $parsedUrl = parse_url($url);
-        if(!$parsedUrl)
-            return false;
-
-        if(isset($parsedUrl['host']) && isset($parsedUrl['scheme']))
-            return $url;
-
-        $mainParsedUrl = parse_url($this->url);
-        if(count($mainParsedUrl)<=1 && $mainParsedUrl['path'] == "" )
-            return $url;
-
-        return ((isset($mainParsedUrl['scheme'])) ? $mainParsedUrl['scheme']."://" : '').
-            $mainParsedUrl['host'] .(substr($mainParsedUrl['host'], -1) == '/' ? '' : '/').
-//            (substr($parsedUrl['path'], 1) == '/' ? substr($parsedUrl['path'], 1) : $parsedUrl['path']).
-            $parsedUrl['path'].
-            (isset($parsedUrl['query']) ? '?'.$parsedUrl['query'] : '');
     }
 
     protected function getDescriptionFromHtml(){

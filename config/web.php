@@ -12,6 +12,9 @@ $config = [
         '@npm'   => '@vendor/npm-asset',
     ],
     'components' => [
+        'urlHelper' => [
+            'class' => 'app\components\UrlHelper',
+        ],
         'request' => [
             // !!! insert a secret key in the following (if it is empty) - this is required by cookie validation
             'cookieValidationKey' => 'asZ2Rr4eC3spEy2GOZEiWsgr-S62P13c',
