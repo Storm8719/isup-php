@@ -9,6 +9,7 @@ use Yii;
  *
  * @property int $id
  * @property string $url
+ * @property string $redirect_to
  * @property string|null $scheme
  * @property int $status
  * @property string|null $header
@@ -44,8 +45,8 @@ class Sites extends \yii\db\ActiveRecord
     {
         return [
             [['url', 'status', 'created_at'], 'required'],
-            [['status', 'last_http_code', 'ttfb', 'pagesize', 'is_need_check_flag', 'created_by', 'created_at', 'updated_at'], 'integer'],
-            [['header', 'description', 'info', 'additional_content', 'image_url', 'scheme', 'title'], 'string'],
+            [['status', 'last_http_code', 'ttfb', 'pagesize', 'is_need_check_flag', 'created_by', 'created_at', 'updated_at', 'is_image_setted'], 'integer'],
+            [['header', 'description', 'info', 'additional_content', 'image_url', 'scheme', 'title', 'image_url_options', 'redirect_to'], 'string'],
             [['url'], 'string', 'max' => 255],
         ];
     }
@@ -58,6 +59,7 @@ class Sites extends \yii\db\ActiveRecord
         return [
             'id' => Yii::t('app', 'ID'),
             'url' => Yii::t('app', 'Url'),
+            'redirect_to' => Yii::t('app', 'Redirect To'),
             'scheme' => Yii::t('app', 'Scheme'),
             'status' => Yii::t('app', 'Status'),
             'header' => Yii::t('app', 'Header'),

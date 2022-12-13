@@ -5,14 +5,14 @@ use yii\db\Migration;
 /**
  * Handles adding columns to table `{{%sites}}`.
  */
-class m221204_172006_add_image_url_column_to_sites_table extends Migration
+class m221213_193827_add_redirect_to_column_to_sites_table extends Migration
 {
     /**
      * {@inheritdoc}
      */
     public function safeUp()
     {
-        $this->addColumn('{{%sites}}', 'image_url', $this->string(255)->after('info'));
+        $this->addColumn('{{%sites}}', 'redirect_to', $this->string(255)->after('url'));
     }
 
     /**
@@ -20,6 +20,6 @@ class m221204_172006_add_image_url_column_to_sites_table extends Migration
      */
     public function safeDown()
     {
-        $this->dropColumn('{{%sites}}', 'image_url');
+        $this->dropColumn('{{%sites}}', 'redirect_to');
     }
 }
