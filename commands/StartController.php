@@ -4,10 +4,8 @@
 namespace app\commands;
 
 
-use app\components\UrlHelper;
 use app\models\HtmlParser;
 use app\models\Sites;
-use GuzzleHttp\Promise\Promise;
 use yii\console\ExitCode;
 use app\models\RollingCurlCustom;
 
@@ -16,6 +14,7 @@ class StartController extends \yii\console\Controller
 
     public $rollingCurl;
     public $rollingCurlForImages;
+    public $imagesResults;
 
     public function actionIndex($message = 'hello world')
     {
@@ -30,17 +29,16 @@ class StartController extends \yii\console\Controller
         $this->rollingCurl->setCallback(function(\RollingCurl\Request $request, RollingCurlCustom $rollingCurl){
             $this->setFetchingResults($request);
             $rollingCurl->clearCompleted();
-            $rollingCurl->prunePendingRequestQueue();
+//            $rollingCurl->prunePendingRequestQueue();
         });
         $this->rollingCurlForImages = new RollingCurlCustom();
-        $this->rollingCurlForImages->setSimultaneousLimit(7);
+        $this->rollingCurlForImages->setSimultaneousLimit(5);
         $this->rollingCurlForImages->setCallback(function(\RollingCurl\Request $request, RollingCurlCustom $rollingCurl){
             $this->setFetchingResultsForImages($request);
             $rollingCurl->clearCompleted();
-            $rollingCurl->prunePendingRequestQueue();
+//            $rollingCurl->prunePendingRequestQueue();
         });
 
-//        var_dump($this->rollingCurlForImages === $this->rollingCurl);
     }
 
     public function startDaemon(){
@@ -59,6 +57,7 @@ class StartController extends \yii\console\Controller
 //        try {
             $this->rollingCurl->execute();
             $this->rollingCurlForImages->execute();
+
 //        } catch (\Exception $e) {
 //            echo "error executing";
 //        }
@@ -83,14 +82,35 @@ class StartController extends \yii\console\Controller
 
         $websiteModel->save();
 
+        $urlTurn = 1;
+        $fetchedCount = count($faviconsUrlArr);
         foreach ($faviconsUrlArr as $url){
-            $this->rollingCurlForImages->get($url, null, [CURLOPT_NOBODY => false], ['model' => $websiteModel]);
+//            echo 'STARTED: '.$url.' WS id = '.$websiteModel->id." Total fetched = ".$fetchedCount." --> this turn = ".$urlTurn." ".PHP_EOL;
+            $this->rollingCurlForImages->get($url, null, [CURLOPT_NOBODY => true], ['model' => $websiteModel, 'turn' => $urlTurn, 'fetchedCount' => $fetchedCount]);
+            $urlTurn++;
         }
-        echo "Updated ".$websiteModel->url . PHP_EOL;
+//        echo "Updated ".$websiteModel->url . PHP_EOL;
     }
 
     private function setFetchingResultsForImages(\RollingCurl\Request $request){
-        echo 'setFetchingResultsForImages requested'.PHP_EOL;
+        $websiteModel = $request->getExtraInfo()['model'];
+        $turn = $request->getExtraInfo()['turn'];
+        $fetchedCount = $request->getExtraInfo()['fetchedCount'];
+        $responseInfo = $request->getResponseInfo();
+
+        $turnStatus = ($responseInfo['http_code'] == '200' && preg_match('/.*?image.*?/', $responseInfo['content_type'], $m));
+
+        if($turnStatus && ((!isset($this->imagesResults[$websiteModel->id])) || $this->imagesResults[$websiteModel->id]['turn'] > $turn)){
+            $this->imagesResults[$websiteModel->id] = ['turn' => $turn, 'url' => $responseInfo['url']];
+        }
+
+        if($fetchedCount == $turn){
+            $websiteModel->image_url = $this->imagesResults[$websiteModel->id]['url'];
+            $websiteModel->is_image_setted = 1;
+            $websiteModel->save();
+        }
+
+//        echo $responseInfo['url'].' WS id = '.$websiteModel->id." Total fetched = ".$fetchedCount." --> this turn = ".$turn." status ".$turnStatus.PHP_EOL;
     }
 
 }
