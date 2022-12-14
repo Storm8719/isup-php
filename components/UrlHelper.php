@@ -24,15 +24,52 @@ class UrlHelper extends Component
         if(isset($parsedUrl['host']) && isset($parsedUrl['scheme']))
             return $url;
 
-        $mainParsedUrl = parse_url($reference);
-        if(count($mainParsedUrl)<=1 && $mainParsedUrl['path'] == "" )
+        $referenceParsed = parse_url($reference);
+        if(count($referenceParsed)<=1 && $referenceParsed['path'] == "" )
             return $url;
 
-        return ((isset($mainParsedUrl['scheme'])) ? $mainParsedUrl['scheme']."://" : '').
-            $mainParsedUrl['host'] .(substr($mainParsedUrl['host'], -1) == '/' ? '' : '/').
-//            (substr($parsedUrl['path'], 1) == '/' ? substr($parsedUrl['path'], 1) : $parsedUrl['path']).
-            $parsedUrl['path'].
-            (isset($parsedUrl['query']) ? '?'.$parsedUrl['query'] : '');
+        if(count($parsedUrl)==1 && isset($parsedUrl['path'])){
+
+            $pattern = sprintf('/%s(.*?)$/i',$referenceParsed['host']);
+            if(preg_match($pattern, $parsedUrl['path'], $m)){
+                $parsedUrl['path'] = $m[1];
+                $parsedUrl['host'] = $referenceParsed['host'];
+                $parsedUrl['scheme'] = $referenceParsed['scheme'];
+            }
+        }
+
+        if(isset($parsedUrl['scheme'])){
+            $protocol = $parsedUrl['scheme'].'://';
+        }elseif(isset($referenceParsed['scheme'])){
+            $protocol = $referenceParsed['scheme'].'://';
+        }else{
+            $protocol = "";
+        }
+
+        if(isset($parsedUrl['host'])){
+            $host = $parsedUrl['host'];
+        }elseif(isset($referenceParsed['host'])){
+            $host = $referenceParsed['host'];
+        }else{
+            $host = "";
+        }
+
+        $host = $host.(substr($host, -1) == '/' ? '' : '/');
+
+        if(isset($parsedUrl['path'])){
+            $path = $parsedUrl['path'];
+        }else{
+            return false;
+        }
+
+        if(isset($parsedUrl['query'])){
+            $query = '?'.$parsedUrl['query'];
+        }else{
+            $query = "";
+        }
+
+        return $protocol . str_replace('//', '/',$host . $path . $query);
+
     }
 
 }
