@@ -14,6 +14,9 @@ $config = [
         '@tests' => '@app/tests',
     ],
     'components' => [
+        'l' => [
+            'class' => 'app\components\Log',
+        ],
         'urlHelper' => [
             'class' => 'app\components\UrlHelper',
         ],
