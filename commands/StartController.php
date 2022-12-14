@@ -25,14 +25,14 @@ class StartController extends \yii\console\Controller
 
     private function initRollingCurl(){
         $this->rollingCurl = new RollingCurlCustom();
-        $this->rollingCurl->setSimultaneousLimit(7);
+        $this->rollingCurl->setSimultaneousLimit(5);
         $this->rollingCurl->setCallback(function(\RollingCurl\Request $request, RollingCurlCustom $rollingCurl){
             $this->setFetchingResults($request);
             $rollingCurl->clearCompleted();
 //            $rollingCurl->prunePendingRequestQueue();
         });
         $this->rollingCurlForImages = new RollingCurlCustom();
-        $this->rollingCurlForImages->setSimultaneousLimit(5);
+        $this->rollingCurlForImages->setSimultaneousLimit(8);
         $this->rollingCurlForImages->setCallback(function(\RollingCurl\Request $request, RollingCurlCustom $rollingCurl){
             $this->setFetchingResultsForImages($request);
             $rollingCurl->clearCompleted();
@@ -51,7 +51,7 @@ class StartController extends \yii\console\Controller
         foreach ($sites as $site){
             echo 'Updating '.$site->url.PHP_EOL;
             $url = ($site->scheme ? $site->scheme.'://'.$site->url : 'https://'.$site->url);
-            $this->rollingCurl->get($url, null, [CURLOPT_NOBODY => false], ['model' => $site]);
+            $this->rollingCurl->get($url, null, [CURLOPT_NOBODY => false, CURLOPT_TIMEOUT => 8], ['model' => $site]);
         }
 
 //        try {
@@ -73,8 +73,13 @@ class StartController extends \yii\console\Controller
         $websiteModel = $request->getExtraInfo()['model'];
         $parser = new HtmlParser($request->getResponseText(), $responseInfo['url']);
         $websiteModel->last_http_code = (int) $responseInfo['http_code'];
-        $websiteModel->ttfb = floatval($responseInfo['starttransfer_time']) * 1000; //ms
         $websiteModel->updated_at = time();
+        if(!$websiteModel->last_http_code){
+            return $websiteModel->save();
+        }
+        if($responseInfo['redirect_count'])
+            $websiteModel->redirect_to = $responseInfo['url'];
+        $websiteModel->ttfb = floatval($responseInfo['starttransfer_time']) * 1000; //ms
         $websiteModel->header = $parser->getTitle();
         $websiteModel->description = $parser->getDescription();
         $faviconsUrlArr = $parser->getFaviconUrlCandidatesArray();
@@ -96,7 +101,7 @@ class StartController extends \yii\console\Controller
         $urlTurn = 1;
         $fetchedCount = count($faviconsUrlArr);
         foreach ($faviconsUrlArr as $url){
-            $this->rollingCurlForImages->get($url, null, [CURLOPT_NOBODY => true], ['model' => $websiteModel, 'turn' => $urlTurn, 'fetchedCount' => $fetchedCount]);
+            $this->rollingCurlForImages->get($url, null, [CURLOPT_NOBODY => true, CURLOPT_TIMEOUT => 4], ['model' => $websiteModel, 'turn' => $urlTurn, 'fetchedCount' => $fetchedCount]);
             $urlTurn++;
         }
     }
