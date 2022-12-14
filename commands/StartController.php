@@ -82,14 +82,23 @@ class StartController extends \yii\console\Controller
 
         $websiteModel->save();
 
+        if(!empty($faviconsUrlArr)){
+            $this->fetchFavicons($websiteModel, $faviconsUrlArr);
+        }
+//        echo "Updated ".$websiteModel->url . PHP_EOL;
+    }
+
+    public function fetchFavicons(\app\models\Sites $websiteModel, $faviconsUrlArr = null){
+
+        if(!$faviconsUrlArr)
+            $faviconsUrlArr = json_decode($websiteModel->image_url_options);
+
         $urlTurn = 1;
         $fetchedCount = count($faviconsUrlArr);
         foreach ($faviconsUrlArr as $url){
-//            echo 'STARTED: '.$url.' WS id = '.$websiteModel->id." Total fetched = ".$fetchedCount." --> this turn = ".$urlTurn." ".PHP_EOL;
             $this->rollingCurlForImages->get($url, null, [CURLOPT_NOBODY => true], ['model' => $websiteModel, 'turn' => $urlTurn, 'fetchedCount' => $fetchedCount]);
             $urlTurn++;
         }
-//        echo "Updated ".$websiteModel->url . PHP_EOL;
     }
 
     private function setFetchingResultsForImages(\RollingCurl\Request $request){
@@ -104,13 +113,13 @@ class StartController extends \yii\console\Controller
             $this->imagesResults[$websiteModel->id] = ['turn' => $turn, 'url' => $responseInfo['url']];
         }
 
-        if($fetchedCount == $turn){
+        if($fetchedCount == $turn && isset($this->imagesResults[$websiteModel->id]['url'])){
             $websiteModel->image_url = $this->imagesResults[$websiteModel->id]['url'];
             $websiteModel->is_image_setted = 1;
             $websiteModel->save();
         }
 
-//        echo $responseInfo['url'].' WS id = '.$websiteModel->id." Total fetched = ".$fetchedCount." --> this turn = ".$turn." status ".$turnStatus.PHP_EOL;
+        echo $responseInfo['url'].' WS id = '.$websiteModel->id." Total fetched = ".$fetchedCount." --> this turn = ".$turn." status ".$turnStatus.PHP_EOL;
     }
 
 }
