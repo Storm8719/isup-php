@@ -4,7 +4,6 @@
 namespace app\models;
 
 use Yii;
-use GuzzleHttp\Exception\GuzzleException;
 
 class HtmlParser
 {
@@ -25,7 +24,7 @@ class HtmlParser
     }
 
     public function getFaviconUrlCandidatesArray(){
-        return $this->getFaviconFromHtml();
+        return self::getFaviconFromHtml($this->headTagHtml, $this->url);
     }
 
     public function getDescription(){
@@ -41,7 +40,7 @@ class HtmlParser
         $this->headTagHtml = isset($headHtml[0]) ? $headHtml[0] : null;
     }
 
-    private function getFaviconFromHtml()
+    public static function getFaviconFromHtml($html, $url)
     {
         $possibleCandidates = [];
 
@@ -57,21 +56,21 @@ class HtmlParser
   
   ~ix';
 
-        if(preg_match($svgFaviconPattern, $this->headTagHtml, $svg)){
-            $url = Yii::$app->urlHelper->normalizeUrl($svg[1], $this->url);
+        if(preg_match($svgFaviconPattern, $html, $svg)){
+            $url = Yii::$app->urlHelper->normalizeUrl($svg[1], $url);
             $possibleCandidates[] = $url;
         }
 
-        preg_match_all('~<link.*?rel=".*?icon".*?>~is', $this->headTagHtml, $linksMatches);
+        preg_match_all('~<link.*?rel=".*?icon".*?>~is', $html, $linksMatches);
 
         foreach ($linksMatches[0] as $linkTag) {
 
             if (preg_match('/sizes=.*?(?:(?:\d{3,}|[6-9]\d)x(?:\d{3,}|[6-9]\d)|.*?any.*?)/', $linkTag, $res)) {
                 preg_match('/href="(.*?)"/', $linkTag, $match);
-                $url = Yii::$app->urlHelper->normalizeUrl($match[1], $this->url);
+                $url = Yii::$app->urlHelper->normalizeUrl($match[1], $url);
                 $possibleCandidates[] = $url;
             }elseif(preg_match('/href="(.*?)"/', $linkTag, $match)){
-                $url = Yii::$app->urlHelper->normalizeUrl($match[1], $this->url);
+                $url = Yii::$app->urlHelper->normalizeUrl($match[1], $url);
                 $possibleCandidates[] = $url;
             }
         }
@@ -79,19 +78,6 @@ class HtmlParser
         return $possibleCandidates;
     }
 
-//    private function isImageUrlCheck($url){
-//
-//
-//
-//        $client = new \GuzzleHttp\Client();
-//        try{
-//            $response = $client->request('GET', $url);
-//        } catch (GuzzleException $e) {
-//            echo "error on isImageUrlCheck url ".$url;
-//            return false;
-//        }
-//        return ($response->getStatusCode() == 200 && preg_match('/.*?image.*?/', $response->getHeaderLine('content-type'), $m));
-//    }
 
     private function getDescriptionFromHtml(){
         $pattern = '
