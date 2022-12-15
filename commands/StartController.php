@@ -5,10 +5,7 @@ namespace app\commands;
 
 
 use app\daemon\MainDaemon;
-use app\models\HtmlParser;
-use app\models\Sites;
 use yii\console\ExitCode;
-use app\models\RollingCurlCustom;
 
 class StartController extends \yii\console\Controller
 {

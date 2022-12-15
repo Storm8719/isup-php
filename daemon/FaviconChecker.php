@@ -14,6 +14,8 @@ class FaviconChecker extends Checker
     public function __construct()
     {
         parent::__construct();
+        $this->simultaneousLimit = 10;
+        $this->curlOptions = [CURLOPT_NOBODY => true, CURLOPT_TIMEOUT => 3];
     }
 
     public function addUrlToCheck(\app\models\Sites $site){

@@ -4,7 +4,7 @@
 namespace app\daemon;
 
 
-use app\models\HtmlParser;
+use app\components\HtmlParser;
 use app\models\Sites;
 use Yii;
 
@@ -14,6 +14,7 @@ class MainDaemon implements CheckerObserver
     public $faviconChecker;
 
     public function start(){
+        $start = microtime(true);
         Yii::$app->l->log('Daemon starts');
         $this->htmlChecker = new MainChecker();
         $this->htmlChecker->attach($this);
@@ -24,7 +25,7 @@ class MainDaemon implements CheckerObserver
         $this->htmlChecker->addUrlToCheckArr($sites);
         $this->htmlChecker->execute();
         $this->faviconChecker->execute();
-        Yii::$app->l->log('Daemon Ends');
+        Yii::$app->l->log("Daemon Ends...done in " . (microtime(true) - $start));
     }
 
     public function setResults($data){

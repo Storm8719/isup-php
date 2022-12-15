@@ -38,22 +38,14 @@ abstract class Checker
 
     public function attach(CheckerObserver $observer)
     {
-        echo "Subject: Attached an observer.\n";
+//        echo "Subject: Attached an observer.\n";
         $this->observers->attach($observer);
     }
 
     public function detach(CheckerObserver $observer)
     {
         $this->observers->detach($observer);
-        echo "Subject: Detached an observer.\n";
-    }
-
-    public function notify()
-    {
-        echo "Subject: Notifying observers...\n";
-        foreach ($this->observers as $observer) {
-            $observer->update($this);
-        }
+//        echo "Subject: Detached an observer.\n";
     }
 
 

@@ -25,7 +25,6 @@ class MainChecker extends Checker
     public function sendFetchingResults(\RollingCurl\Request $request){
         foreach ($this->observers as $observer) {
             $observer->setResults(['type' => 'mainCheck', 'request'=> $request]);
-//            $observer->setHtmlCheckResults($request);
         }
     }
 
