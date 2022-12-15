@@ -4,20 +4,27 @@
 namespace app\commands;
 
 
-use app\daemon\MainDaemon;
+use app\daemon\WebsiteCheckerService;
+use app\models\Sites;
+use Yii;
 use yii\console\ExitCode;
 
 class StartController extends \yii\console\Controller
 {
 
-    public $rollingCurl;
-    public $rollingCurlForImages;
-    public $imagesResults;
-
     public function actionIndex($message = 'hello world')
     {
-        $daemon = new MainDaemon();
-        $daemon->start();
+        $daemon = new WebsiteCheckerService();
+
+        $start = microtime(true);
+        Yii::$app->l->log('Service starts');
+
+        $sites = Sites::find()->all();
+
+        $daemon->checkAndSaveWebsites($sites);
+
+        Yii::$app->l->log("...done in " . (microtime(true) - $start));
+
         return ExitCode::OK;
     }
 

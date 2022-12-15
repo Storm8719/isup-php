@@ -16,41 +16,71 @@ abstract class Checker
         $this->init();
     }
 
-    public function init(){
+    /**
+     * Init Checker process
+     * @return void
+     */
+    public function init()
+    {
         $this->observers = new \SplObjectStorage();
         $this->rc = new RollingCurlCustom();
         $this->rc->setSimultaneousLimit($this->simultaneousLimit);
-        $this->rc->setCallback(function(\RollingCurl\Request $request, RollingCurlCustom $rc){
+        $this->rc->setCallback(function (\RollingCurl\Request $request, RollingCurlCustom $rc) {
             $this->sendFetchingResults($request);
             $rc->clearCompleted();
         });
     }
 
-    public function addUrlToCheckArr($sites){
-        foreach ($sites as $site){
+    /**
+     * Add urls to queue. In array must be \app\models\Sites objects
+     * @param array $sites
+     * @return void
+     */
+    public function addUrlToCheckArr($sites)
+    {
+        foreach ($sites as $site) {
             $this->addUrlToCheck($site);
         }
     }
 
-    public function execute(){
+    /**
+     * Executing RollingCurl when all needed urls already in queue
+     */
+    public function execute()
+    {
         $this->rc->execute();
     }
 
+
+    /**
+     * Attach this checker to Observer
+     * @param CheckerObserver $observer
+     */
     public function attach(CheckerObserver $observer)
     {
-//        echo "Subject: Attached an observer.\n";
         $this->observers->attach($observer);
     }
 
+    /**
+     * Detach this checker from Observer
+     * @param CheckerObserver $observer
+     */
     public function detach(CheckerObserver $observer)
     {
         $this->observers->detach($observer);
-//        echo "Subject: Detached an observer.\n";
     }
 
 
+    /**
+     * Add one url to queue
+     * @param \app\models\Sites $site
+     */
     public abstract function addUrlToCheck(\app\models\Sites $site);
 
+    /**
+     * Send results to Observer
+     * @param \RollingCurl\Request $request
+     */
     public abstract function sendFetchingResults(\RollingCurl\Request $request);
 
 }
