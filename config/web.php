@@ -12,6 +12,9 @@ $config = [
         '@npm'   => '@vendor/npm-asset',
     ],
     'components' => [
+        'l' => [
+            'class' => 'app\components\LogFront',
+        ],
         'urlHelper' => [
             'class' => 'app\components\UrlHelper',
         ],

@@ -4,6 +4,7 @@
 namespace app\controllers;
 
 
+use app\daemon\WebsiteCheckerService;
 use app\models\Sites;
 use Yii;
 use yii\helpers\HtmlPurifier;
@@ -54,7 +55,19 @@ class MainController extends \yii\web\Controller
     }
 
     public function actionDelay(){
-        sleep(3);
+//        sleep(3);
+
+        $websiteModel = new Sites();
+        $websiteModel->url = 'youtube.com';
+        $checker = new WebsiteCheckerService();
+        $checker->checkAndSaveOneWebsite($websiteModel);
+        echo '<pre>';
+        var_dump($websiteModel->last_http_code);
+        var_dump($websiteModel->title);
+        var_dump(Yii::$app->l->getLogs());
+        echo '</pre>';
+        die;
+
         return $this->actionIndex();
     }
 
