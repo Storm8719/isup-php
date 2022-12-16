@@ -8,16 +8,65 @@ use yii\base\Component;
 
 class UrlHelper extends Component
 {
-    public $parsedUrl;
-    public $parsedReference;
 
-    public function parseUrl($url){
-        return parse_url($url);
+    public function getUrlSchemeAndHost($url){
+        $scheme = $this->getUrlScheme($url);
+        if(!$scheme)
+            $scheme = 'https';
+        $host = $this->getUrlHost($url);
+        if($host)
+            return ['scheme' => $scheme, 'host' => $host];
+        return null;
     }
 
+
+    public function getUrlHost($url){
+        if(filter_var($url, FILTER_VALIDATE_URL, [FILTER_FLAG_HOST_REQUIRED])){
+            $urlArr = parse_url($url);
+            return $urlArr['host'];
+        }
+
+        $regex = "((https?|ftp)\:\/\/)?";
+        $regex .= "([a-z0-9+!*(),;?&=\$_.-]+(\:[a-z0-9+!*(),;?&=\$_.-]+)?@)?";
+        $regex .= "([a-z0-9-.]*)\.([a-z]{2,3})";
+        $regex .= "(\:[0-9]{2,5})?";
+        $regex .= "(\/([a-z0-9+\$_-]\.?)+)*\/?";
+        $regex .= "(\?[a-z+&\$_.-][a-z0-9;:@&%=+\/\$_.-]*)?";
+        $regex .= "(#[a-z_.-][a-z0-9+\$_.-]*)?";
+
+        if (!preg_match("/^$regex$/i", $url))
+            return null;
+
+        if(preg_match("/^(.*?)\//is", $url, $match))
+            return $match[1];
+
+        return $url;
+    }
+
+
+    public function getUrlScheme($url){
+        $urlArr = parse_url($url);
+        if(isset($urlArr['scheme']))
+            return $urlArr['scheme'];
+
+        if(preg_match("/^(?:https?).*?/is", $url, $match))
+            return $match[0];
+
+        return null;
+    }
+
+    /**
+     * Function for getting full url from 2 parts
+     * 1st part($url) = relative or full url that we need to return full
+     * if $url already full - returning as it is.
+     * If $url not full - then we get protocol and hostname from $reference and composing it with $url
+     * @param string $url
+     * @param string $reference
+     * @return false|string
+     */
     public function normalizeUrl($url, $reference){
 
-        $parsedUrl = $this->parseUrl($url);
+        $parsedUrl = parse_url($url);
         if(!$parsedUrl)
             return false;
 
