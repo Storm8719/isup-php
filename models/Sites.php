@@ -93,11 +93,11 @@ class Sites extends \yii\db\ActiveRecord
         $this->save();
     }
 
-    public function createWebsite($websiteUrl){
+    public function setUrl($websiteUrl){
         $this->url = $websiteUrl;
         $this->status = 0;
         $this->created_at = time();
         $this->is_need_check_flag = 1;
-        $this->save();
+        return $this;
     }
 }
