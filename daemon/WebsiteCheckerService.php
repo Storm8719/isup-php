@@ -91,7 +91,7 @@ class WebsiteCheckerService implements CheckerObserver
             $websiteModel->redirect_to = $responseInfo['url'];
 
         $websiteModel->ttfb = floatval($responseInfo['starttransfer_time']) * 1000; //ms
-        $websiteModel->header = $parser->getTitle();
+        $websiteModel->title = $parser->getTitle();
         $websiteModel->description = $parser->getDescription();
 
         if ($websiteModel->is_image_setted || !$this->isNeedToCheckFavicon)
