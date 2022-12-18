@@ -30,7 +30,7 @@ $config = [
             'enableAutoLogin' => true,
         ],
         'errorHandler' => [
-            'errorAction' => 'site/error',
+            'errorAction' => 'main/error',
         ],
         'mailer' => [
             'class' => 'yii\swiftmailer\Mailer',
@@ -54,7 +54,9 @@ $config = [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
             'rules' => [
-                'site/<site:((\w+|\d+|.)+\w+)>' => 'main/site'
+//                'site' => 'main/site',
+                'main/site/<site:((\w+|\d+|.)+\w+)>' => 'main/site',
+//                'add-site'=> 'main/add-site',
             ],
         ],
     ],
