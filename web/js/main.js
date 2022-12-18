@@ -1,4 +1,8 @@
-const websitesInfoPath = '/site/'
+let websitesInfoPath = '/site/';
+
+if(typeof websitesInfoPathDynamic !== "undefined"){
+    websitesInfoPath = websitesInfoPathDynamic;
+}
 
 const liveSearchLogic = () => {
     const searchInput = document.getElementById('liveSearch');

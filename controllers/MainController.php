@@ -10,11 +10,27 @@ use app\models\Sites;
 use Yii;
 use yii\helpers\HtmlPurifier;
 use yii\helpers\Url;
+use yii\web\BadRequestHttpException;
+use yii\web\ErrorAction;
+use yii\web\NotFoundHttpException;
 
 class MainController extends \yii\web\Controller
 {
 
     public $layout = "main";
+
+    public function actions()
+    {
+        return [
+            'error' => [
+                'class' => 'yii\web\ErrorAction',
+            ],
+            'captcha' => [
+                'class' => 'yii\captcha\CaptchaAction',
+                'fixedVerifyCode' => YII_ENV_TEST ? 'testme' : null,
+            ],
+        ];
+    }
 
     /**
      * Displays homepage.
@@ -38,21 +54,30 @@ class MainController extends \yii\web\Controller
     {
         $host = Yii::$app->urlHelper->getUrlHost($site);
         if(!$host)
-            return false;
+            throw new NotFoundHttpException('Page not found');
 
         $websiteModel = Sites::findOne(['url' => $site]);
-        if(!$websiteModel)
-            return false;
+        if(!$websiteModel){
+            Yii::$app->response->statusCode = 404;
+            Yii::$app->session->setFlash('contactFormSubmitted');
+            return $this->actionAddSiteHandler(true, $site);
+        }
 
-        Yii::$app->view->title = HtmlPurifier::process("Сайт $site работает сегодня?");
+
+        Yii::$app->view->title = HtmlPurifier::process("Сайт $websiteModel->url работает сегодня?");
         Yii::$app->view->registerMetaTag([
             'name' => 'description',
-            'content' => HtmlPurifier::process("Узнайте, доступен ли сегодня сайт $site в России?")
+            'content' => HtmlPurifier::process("Узнайте, доступен ли сегодня сайт $websiteModel->url в России?")
         ]);
         return $this->render('site', ['siteName' => $site]);
     }
 
+
     public function actionAddSite(){
+        return $this->actionAddSiteHandler();
+    }
+
+    private function actionAddSiteHandler($from_404 = null, $siteUrl = null){
         $formModel = new AddSiteForm();
         if($formModel->load(Yii::$app->request->post()) && $formModel->addSite()){
             $websiteModel = $formModel->getSiteModel();
@@ -60,8 +85,15 @@ class MainController extends \yii\web\Controller
             $checker->checkAndSaveOneWebsite($websiteModel);
             $this->redirect(Url::toRoute(['main/site', 'site' => $websiteModel->url]));
         }
+
+        if($from_404 && $siteUrl){
+            $formModel->url = $siteUrl;
+        }
+
+
         return $this->render('add_website_form', [
             'model' => $formModel,
+            'from_404' => $from_404
         ]);
     }
 

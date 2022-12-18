@@ -23,11 +23,14 @@ AppAsset::register($this);
 
 <body>
 <?php $this->beginBody() ?>
-
+<script>
+    const websitesInfoPathDynamic = "<?php echo \yii\helpers\Url::to(['main/site'])?>/";
+</script>
 
 <header>
     <nav class="container">
         <a href="/" class="header-logo">LOGO</a>
+        <a href="<?php echo \yii\helpers\Url::to(['main/add-site']) ?>">Add site</a>
         <div class="header-menu">
             <form class="search-box">
                 <input type="text" placeholder="Search..." id="liveSearch"/>
