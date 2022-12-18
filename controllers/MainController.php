@@ -63,13 +63,7 @@ class MainController extends \yii\web\Controller
             return $this->actionAddSiteHandler(true, $site);
         }
 
-
-        Yii::$app->view->title = HtmlPurifier::process("Сайт $websiteModel->url работает сегодня?");
-        Yii::$app->view->registerMetaTag([
-            'name' => 'description',
-            'content' => HtmlPurifier::process("Узнайте, доступен ли сегодня сайт $websiteModel->url в России?")
-        ]);
-        return $this->render('site', ['siteName' => $site]);
+        return $this->render('site', ['websiteModel' => $websiteModel]);
     }
 
 
