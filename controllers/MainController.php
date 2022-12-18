@@ -5,9 +5,11 @@ namespace app\controllers;
 
 
 use app\daemon\WebsiteCheckerService;
+use app\models\AddSiteForm;
 use app\models\Sites;
 use Yii;
 use yii\helpers\HtmlPurifier;
+use yii\helpers\Url;
 
 class MainController extends \yii\web\Controller
 {
@@ -34,17 +36,13 @@ class MainController extends \yii\web\Controller
 
     public function actionSite($site)
     {
-
-        if(!filter_var('https://'.$site, FILTER_VALIDATE_URL, [FILTER_FLAG_HOST_REQUIRED])){
-            return $this->render('incorrect_input', ['siteName' => $site]);
-        }
+        $host = Yii::$app->urlHelper->getUrlHost($site);
+        if(!$host)
+            return false;
 
         $websiteModel = Sites::findOne(['url' => $site]);
-
-        if(!$websiteModel){
-            (new Sites())->createWebsite($site);
-            //TODO add logic for checking new website immediately and return page with result for user
-        }
+        if(!$websiteModel)
+            return false;
 
         Yii::$app->view->title = HtmlPurifier::process("Сайт $site работает сегодня?");
         Yii::$app->view->registerMetaTag([
@@ -54,20 +52,27 @@ class MainController extends \yii\web\Controller
         return $this->render('site', ['siteName' => $site]);
     }
 
+    public function actionAddSite(){
+        $formModel = new AddSiteForm();
+        if($formModel->load(Yii::$app->request->post()) && $formModel->addSite()){
+            $websiteModel = $formModel->getSiteModel();
+            $checker = new WebsiteCheckerService();
+            $checker->checkAndSaveOneWebsite($websiteModel);
+            $this->redirect(Url::toRoute(['main/site', 'site' => $websiteModel->url]));
+        }
+        return $this->render('add_website_form', [
+            'model' => $formModel,
+        ]);
+    }
+
     public function actionDelay(){
 //        sleep(3);
 
         $websiteModel = new Sites();
-        $websiteModel->url = 'youtube.com';
+        $websiteModel->setUrl('php.net');
         $checker = new WebsiteCheckerService();
         $checker->checkAndSaveOneWebsite($websiteModel);
-        echo '<pre>';
-        var_dump($websiteModel->last_http_code);
-        var_dump($websiteModel->title);
-        var_dump(Yii::$app->l->getLogs());
-        echo '</pre>';
-        die;
-
+        $this->redirect(Url::toRoute(['main/site', 'site' => $websiteModel->url]));
         return $this->actionIndex();
     }
 
