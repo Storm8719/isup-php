@@ -8,10 +8,7 @@ use app\daemon\WebsiteCheckerService;
 use app\models\AddSiteForm;
 use app\models\Sites;
 use Yii;
-use yii\helpers\HtmlPurifier;
 use yii\helpers\Url;
-use yii\web\BadRequestHttpException;
-use yii\web\ErrorAction;
 use yii\web\NotFoundHttpException;
 
 class MainController extends \yii\web\Controller
@@ -80,10 +77,8 @@ class MainController extends \yii\web\Controller
             $this->redirect(Url::toRoute(['main/site', 'site' => $websiteModel->url]));
         }
 
-        if($from_404 && $siteUrl){
+        if($from_404 && $siteUrl)
             $formModel->url = $siteUrl;
-        }
-
 
         return $this->render('add_website_form', [
             'model' => $formModel,
@@ -91,25 +86,9 @@ class MainController extends \yii\web\Controller
         ]);
     }
 
-    public function actionDelay(){
-//        sleep(3);
-
-        $websiteModel = new Sites();
-        $websiteModel->setUrl('php.net');
-        $checker = new WebsiteCheckerService();
-        $checker->checkAndSaveOneWebsite($websiteModel);
-        $this->redirect(Url::toRoute(['main/site', 'site' => $websiteModel->url]));
-        return $this->actionIndex();
-    }
-
     public function actionGetWebsitesList(){
         $sites = Sites::find()->select(['id', 'url'])->asArray()->all();
         return $this->asJson($sites);
-    }
-
-    public function actionRandom(){
-        (new Sites())->createRandomWebsite();
-        die("done new random website");
     }
 
 
