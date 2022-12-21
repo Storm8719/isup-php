@@ -140,6 +140,10 @@ footer{
     background: #fff;
 }
 
+.site-card:hover{
+    box-shadow: 0 4px 16px 4px rgb(59 36 134 / 16%);
+}
+
 .popular-list .site-card-box{
     display: block;
     width: 20%;
