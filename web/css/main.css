@@ -2,10 +2,21 @@ html{
     height: 100%;
 }
 body{
-    background: #f0f0f0;
+    background: #ffeaf9;
     height: 100%;
     display: flex;
     flex-direction: column;
+}
+
+body:before{
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: -1;
+    background: radial-gradient(at 100% 40%,#9faffe 0,transparent 46%),radial-gradient(at 90% 100%,#fcd4df 0,transparent 17%),radial-gradient(at 70% 59%,#b3c0fe 0,transparent 49%),radial-gradient(at 45% 40%,#cedefd 0,transparent 38%),radial-gradient(at 30% 40%,#e1fcfe 0,transparent 42%),radial-gradient(at 0 100%,#d6cbf0 0,transparent 63%);
 }
 
 
@@ -13,6 +24,9 @@ body>main{
     flex: 1 0 auto;
     max-width: 100%;
     overflow: hidden;
+}
+body>header{
+    box-shadow: 0 4px 16px 2px rgb(59 36 134 / 16%);
 }
 body>footer, body>header{
     flex: 0 0 auto;
@@ -44,6 +58,7 @@ header nav{
     background: #fff;
     padding: 20px 40px;
     box-sizing: border-box;
+    box-shadow: 0 4px 16px 2px rgb(59 36 134 / 16%);
 }
 footer{
     display: flex;
@@ -84,4 +99,62 @@ footer{
 .results-box a:hover{
     background: #add4ff;
     border-bottom: solid #add4ff 1px;
+}
+
+.site-box{
+    display: flex;
+    flex-direction: column;
+}
+.site-box>div{
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+}
+
+
+/*.site-box>div:nth-child(2){*/
+/*    flex-direction: column;*/
+/*}*/
+.site-card .site-name{
+    font-size: 20px;
+    line-height: 28px;
+}
+.site-card .fav-box{
+    margin: 10px 0;
+}
+
+.popular-list{
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.site-card{
+    box-shadow: 0 4px 16px 2px rgb(59 36 134 / 16%);
+    border-radius: 20px;
+    padding: 40px;
+    box-sizing: border-box;
+    display: block;
+    text-decoration: none;
+    color: black;
+    font-family: cursive;
+    background: #fff;
+}
+
+.popular-list .site-card-box{
+    display: block;
+    width: 20%;
+    padding: 12px;
+    box-sizing: border-box;
+}
+
+.site-fav{
+    width: 30px;
+}
+
+.s_200{
+    color: forestgreen;
+}
+
+.s_empty{
+    color: #ff5858;
 }

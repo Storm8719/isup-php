@@ -42,7 +42,7 @@ class MainController extends \yii\web\Controller
             'content' => 'Description of the main page...'
         ]);
 
-        $sites = Sites::find()->asArray()->limit(3)->all();
+        $sites = Sites::find()->limit(20)->asArray()->all();
 
         return $this->render('index', ['sites' => $sites]);
     }
