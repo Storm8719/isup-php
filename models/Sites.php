@@ -45,7 +45,7 @@ class Sites extends \yii\db\ActiveRecord
     {
         return [
             [['url', 'status', 'created_at'], 'required'],
-            [['status', 'last_http_code', 'ttfb', 'pagesize', 'is_need_check_flag', 'created_by', 'created_at', 'updated_at', 'is_image_setted'], 'integer'],
+            [['status', 'last_http_code', 'pagesize', 'created_by', 'created_at', 'updated_at'], 'integer'],
             [['header', 'description', 'info', 'additional_content', 'image_url', 'scheme', 'title', 'image_url_options', 'redirect_to'], 'string'],
             [['url'], 'string', 'max' => 255],
         ];

@@ -56,9 +56,15 @@ class WebsiteCheckerService implements CheckerObserver
     public function setResults($data)
     {
         if ($data['type'] == 'faviconCheck') {
-            $this->setFaviconCheckResults($data['model'], $data['urlToSet']);
+            $result = $this->setFaviconCheckResults($data['model'], $data['urlToSet']);
         } elseif ($data['type'] == 'mainCheck') {
-            $this->setHtmlCheckResults($data['request']);
+            $result = $this->setHtmlCheckResults($data['request']);
+        }
+
+        if(isset($result) && gettype($result) == "array"){
+            Yii::$app->l->log("ERROR WHILE SAVING MODEL:");
+            Yii::$app->l->log($data['request']->getExtraInfo()['model']->url);
+            var_dump($result);
         }
     }
 
@@ -82,7 +88,7 @@ class WebsiteCheckerService implements CheckerObserver
 
         if (!$websiteModel->last_http_code) {
             $websiteModel->status = -1;
-            return $websiteModel->save();
+            return $websiteModel->save() ? true : $websiteModel->getErrors();
         }
 
         $websiteModel->status = 1;
@@ -95,30 +101,29 @@ class WebsiteCheckerService implements CheckerObserver
         $websiteModel->description = $parser->getDescription();
 
         if ($websiteModel->is_image_setted || !$this->isNeedToCheckFavicon)
-            return $websiteModel->save();
+            return $websiteModel->save() ? true : $websiteModel->getErrors();
 
         $faviconsUrlArr = $parser->getFaviconUrlCandidatesArray();
         $websiteModel->image_url_options = json_encode($faviconsUrlArr);
-        $websiteModel->save();
+        $is_save = $websiteModel->save() ? true : $websiteModel->getErrors();
 
         if (!empty($faviconsUrlArr)) {
             Yii::$app->l->log('Favicon request for ' . $websiteModel->url . ' sended...');
             $this->faviconChecker->addUrlToCheck($websiteModel);
         }
-        return true;
+        return $is_save;
     }
 
     /**
      * Process what we got from \app\daemon\FaviconChecker and save the result.
      * @param Sites $websiteModel
      * @param string|null $imageUrlStr
-     * @return void
      */
     private function setFaviconCheckResults(\app\models\Sites $websiteModel, $imageUrlStr)
     {
         Yii::$app->l->log('Favicon result for ' . $websiteModel->url . ' given: ' . $imageUrlStr);
         $websiteModel->image_url = $imageUrlStr;
         $websiteModel->is_image_setted = 1;
-        $websiteModel->save();
+        return $websiteModel->save() ? true : $websiteModel->getErrors();
     }
 }
