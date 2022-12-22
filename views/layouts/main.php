@@ -94,9 +94,8 @@ AppAsset::register($this);
 </header>
 
 <main>
-    <div class="container main-content">
-        <?php echo $content ?>
-    </div>
+
+    <?php echo $content ?>
 
 </main>
 
