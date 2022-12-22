@@ -151,6 +151,24 @@ footer{
     box-sizing: border-box;
 }
 
+@media (max-width: 1400px){
+    .popular-list .site-card-box{
+        width: 25%;
+    }
+}
+@media (max-width: 991px){
+    .popular-list .site-card-box{
+        width: 50%;
+    }
+}
+
+@media (max-width: 560px){
+    .popular-list .site-card-box{
+        width: 100%;
+    }
+}
+
+
 .site-fav{
     width: 30px;
 }
@@ -162,3 +180,4 @@ footer{
 .s_empty{
     color: #ff5858;
 }
+
