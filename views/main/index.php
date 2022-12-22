@@ -18,6 +18,19 @@ function statusCodeFilter($code){
 
 ?>
 
+<input aria-label="search" type="search" id="search" placeholder="Search" class="w-full bg-gray-900 text-white transition border border-transparent focus:outline-none focus:border-gray-400 rounded py-3 px-2 pl-10 appearance-none leading-normal">
+
+
+
+<input x-on:click="open = !open" type="search" x-model="search" placeholder="Search Here..." class="py-3 px-4 w-1/2 rounded shadow font-thin focus:outline-none focus:shadow-lg focus:shadow-slate-200 duration-100 shadow-gray-100">
+
+
+
+
+<!--<h1 class="text-3xl font-bold underline">-->
+<!--    Hello world!-->
+<!--</h1>-->
+
 <div class="popular-list">
     <?php
     foreach ($sites as $site) {

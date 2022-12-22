@@ -55,6 +55,7 @@ $config = [
             'showScriptName' => false,
             'rules' => [
 //                'site' => 'main/site',
+                '/' => 'main/index',
                 'main/site/<site:((\w+|\d+|.)+\w+)>' => 'main/site',
 //                'add-site'=> 'main/add-site',
             ],
