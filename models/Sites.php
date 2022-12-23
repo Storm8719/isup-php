@@ -94,7 +94,7 @@ class Sites extends \yii\db\ActiveRecord
     }
 
     public function setUrl($websiteUrl){
-        $this->url = $websiteUrl;
+        $this->url = Yii::$app->urlHelper->getUrlHost($websiteUrl);;
         $this->status = 0;
         $this->created_at = time();
         $this->is_need_check_flag = 1;
