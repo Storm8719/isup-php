@@ -51,7 +51,7 @@ AppAsset::register($this);
                 <a class="cursor-pointer" href="/">
                     <h3 class="text-2xl font-medium text-blue-500">
                         <img class="h-10 object-cover"
-                             src="https://stackoverflow.design/assets/img/logos/so/logo-stackoverflow.svg" alt="Store Logo">
+                             src="/favicon.ico" alt="Store Logo">
                     </h3>
                 </a>
             </div>
