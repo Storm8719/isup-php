@@ -36,12 +36,6 @@ class MainController extends \yii\web\Controller
      */
     public function actionIndex()
     {
-        Yii::$app->view->title = "Main Page";
-        Yii::$app->view->registerMetaTag([
-            'name' => 'description',
-            'content' => 'Description of the main page...'
-        ]);
-
         $sites = Sites::find()->limit(30)->asArray()->all();
 
         return $this->render('index', ['sites' => $sites]);

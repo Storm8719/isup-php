@@ -29,19 +29,7 @@ AppAsset::register($this);
 <script src="https://cdn.tailwindcss.com"></script>
 
 <header>
-    <nav class="container">
-        <a href="/" class="header-logo">LOGO</a>
-        <a href="<?php echo \yii\helpers\Url::to(['main/add-site']) ?>">Add site</a>
-        <div class="header-menu">
-            <form class="search-box">
-
-                <!--                <input type="text" placeholder="Search..." id="liveSearch"/>-->
-                <!--                <input type="submit" value="Search">-->
-            </form>
-
-        </div>
-    </nav>
-
+    <div class="header-spacer"></div>
 
     <nav class="bg-white/80
             backdrop-blur-md shadow-md w-full

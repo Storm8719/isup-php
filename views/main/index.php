@@ -1,6 +1,13 @@
 <?php
 /** @var array $sites */
 
+
+$this->title = "Site dont working today?";
+$this->registerMetaTag([
+    'name' => 'description',
+    'content' => 'Check any website everyday'
+]);
+
 function iconFilter($imgUrl)
 {
     if ($imgUrl)
