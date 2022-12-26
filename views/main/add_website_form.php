@@ -10,34 +10,40 @@ use yii\bootstrap4\Html;
 
 $this->title = 'Add website';
 ?>
-<div class="add-website-block">
-    <h1><?= Html::encode($this->title) ?></h1>
 
-    <?php if ($from_404):?>
-        <p>Website not found, but you can add it right now</p>
-    <?php endif; ?>
+<div class="container flex justify-center p-5 sm:p-10">
 
-    <p>Please add url:</p>
+        <?php if ($from_404):?>
+            <p>Website not found, but you can add it right now</p>
+        <?php endif; ?>
 
-    <?php $form = ActiveForm::begin([
-        'id' => 'login-form',
-        'layout' => 'horizontal',
-        'fieldConfig' => [
-            'template' => "{label}\n{input}\n{error}",
-            'labelOptions' => ['class' => 'col-lg-1 col-form-label mr-lg-3'],
-            'inputOptions' => ['class' => 'col-lg-3 form-control'],
-            'errorOptions' => ['class' => 'col-lg-7 invalid-feedback'],
-        ],
-    ]); ?>
+        <div class="w-full sm:w-full lg:w-6/12 mx-auto md:mx-0">
 
-    <?= $form->field($model, 'url')->textInput(['autofocus' => true]) ?>
+            <div class="bg-white p-10 flex flex-col w-full shadow-xl rounded-xl">
+                <h2 class="text-2xl font-bold text-gray-800 text-left mb-5">
+                    Add website
+                </h2>
+                <?php $form = ActiveForm::begin([
+                    'id' => 'login-form',
+                    'layout' => 'horizontal',
+                    'fieldConfig' => [
+                        'template' => "<div id='input' class='flex flex-col w-full my-5'>{label}\n{input}\n{error}</div>",
+                        'labelOptions' => ['class' => 'text-gray-500 mb-2'],
+                        'inputOptions' => ['class' => 'appearance-none border-2 border-gray-100 rounded-lg px-4 py-3 placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:shadow-lg'],
+                        'errorOptions' => ['class' => 'col-lg-7 invalid-feedback'],
+                    ],
+                ]); ?>
 
-    <div>
-        <div>
-            <?= Html::submitButton('Submit', ['class' => 'btn btn-primary', 'name' => 'login-button']) ?>
+                <?= $form->field($model, 'url')->textInput(['autofocus' => true, 'placeholder' => "Please enter url"]) ?>
+
+                <div>
+                    <div>
+                        <?= Html::submitButton('Submit', ['class' => 'w-full py-4 bg-blue-600 rounded-lg text-blue-100 font-bold', 'name' => 'login-button']) ?>
+                    </div>
+                </div>
+
+                <?php ActiveForm::end(); ?>
+            </div>
         </div>
-    </div>
-
-    <?php ActiveForm::end(); ?>
 
 </div>

@@ -36,6 +36,16 @@ class AddSiteForm extends Model
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function attributeLabels()
+    {
+        return [
+            'url' => Yii::t('app', 'Website url'),
+        ];
+    }
+
+    /**
      * Validates the url.
      * This method serves as the inline validation for url.
      *
