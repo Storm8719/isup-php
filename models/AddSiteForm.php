@@ -58,6 +58,13 @@ class AddSiteForm extends Model
             $host = Yii::$app->urlHelper->getUrlHost($this->url);
             if(!$host)
                 $this->addError($attribute, 'Invalid url');
+            $existingWebsiteModel = Sites::findOne(['url' => $host]);
+            if($existingWebsiteModel){
+                $this->addError($attribute, 'url_already_exist');
+                $this->_site = $existingWebsiteModel;
+                $this->url = $existingWebsiteModel->url;
+            }
+
         }
     }
 

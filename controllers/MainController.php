@@ -77,6 +77,9 @@ class MainController extends \yii\web\Controller
             $this->redirect(Url::toRoute(['main/site', 'site' => $websiteModel->url]));
         }
 
+        if($formModel->getErrors('url') && $formModel->getErrors('url')[0] == "url_already_exist")
+            return $this->redirect(Url::toRoute(['main/site', 'site' => $formModel->url]));
+
         if($from_404 && $siteUrl)
             $formModel->url = $siteUrl;
 
