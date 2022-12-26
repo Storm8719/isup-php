@@ -60,11 +60,10 @@ class FaviconChecker extends Checker
         Yii::$app->l->log('FaviconChecker RESULT given: Site: ' . $websiteModel->url . ' Fav url: ' . $responseInfo['url'] . ' Count: ' . $request->getExtraInfo()['fetchedCount'] . ' --> turn ' . $turn . ' status: ' . $turnStatus);
 
         if ($request->getExtraInfo()['fetchedCount'] == $turn) {
-            Yii::$app->l->log('FaviconChecker sended to observer Favicon check result: Site: ' . $websiteModel->url . ' Fav url: ' . $this->imagesResults[$websiteModel->id]['url']);
-            $resultUrl = isset($this->imagesResults[$websiteModel->id]['url']) ? $this->imagesResults[$websiteModel->id]['url'] : null;
+            Yii::$app->l->log('FaviconChecker sended to observer Favicon check result: Site: ' . $websiteModel->url . ' Fav url: ' . (isset($this->imagesResults[$websiteModel->id]) && isset($this->imagesResults[$websiteModel->id]['url'])) ? $this->imagesResults[$websiteModel->id]['url'] : null);
+            $resultUrl = (isset($this->imagesResults[$websiteModel->id]) && isset($this->imagesResults[$websiteModel->id]['url'])) ? $this->imagesResults[$websiteModel->id]['url'] : null;
             foreach ($this->observers as $observer) {
                 $observer->setResults(['type' => 'faviconCheck', 'model' => $websiteModel, 'urlToSet' => $resultUrl]);
-//                $observer->setFaviconCheckResults($websiteModel, $this->imagesResults[$websiteModel->id]['url']);
             }
             unset($this->imagesResults[$websiteModel->id]);
         }
