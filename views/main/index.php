@@ -69,11 +69,12 @@ function statusCodeFilter($code)
                    class="flex flex-row-reverse items-center justify-between w-full col-span-1 p-6 bg-white rounded-lg shadow sm:flex-row">
                     <div class="site-box">
                         <div>
-                            <div class="site-name"><?php echo $site['url'] ?></div>
-                            <div class="fav-box">
+                            <div class="fav-box flex justify-center">
                                 <img src="<?php echo iconFilter($site['image_url']) ?>" class="site-fav"
                                      alt="<?php echo $site['url'] ?> logo"/>
                             </div>
+                            <div class="site-name"><?php echo $site['url'] ?></div>
+
                         </div>
                         <div>
                             <div><?php echo statusCodeFilter($site['last_http_code']) ?></div>
