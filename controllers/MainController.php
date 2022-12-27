@@ -36,12 +36,6 @@ class MainController extends \yii\web\Controller
      */
     public function actionIndex()
     {
-        Yii::$app->view->title = "Main Page";
-        Yii::$app->view->registerMetaTag([
-            'name' => 'description',
-            'content' => 'Description of the main page...'
-        ]);
-
         $sites = Sites::find()->limit(30)->asArray()->all();
 
         return $this->render('index', ['sites' => $sites]);
@@ -76,6 +70,9 @@ class MainController extends \yii\web\Controller
             $checker->checkAndSaveOneWebsite($websiteModel);
             $this->redirect(Url::toRoute(['main/site', 'site' => $websiteModel->url]));
         }
+
+        if($formModel->getErrors('url') && $formModel->getErrors('url')[0] == "url_already_exist")
+            return $this->redirect(Url::toRoute(['main/site', 'site' => $formModel->url]));
 
         if($from_404 && $siteUrl)
             $formModel->url = $siteUrl;

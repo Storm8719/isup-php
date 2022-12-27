@@ -3,6 +3,7 @@
 
 namespace app\components;
 
+use ForceUTF8\Encoding;
 use Yii;
 
 class HtmlParser
@@ -28,11 +29,11 @@ class HtmlParser
     }
 
     public function getDescription(){
-        return $this->getDescriptionFromHtml();
+        return Encoding::toUTF8($this->getDescriptionFromHtml());
     }
 
     public function getTitle(){
-        return $this->getTitleFromHtml();
+        return Encoding::toUTF8($this->getTitleFromHtml());
     }
 
     private function setHeadTagHtml(){

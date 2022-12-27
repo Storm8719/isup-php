@@ -55,6 +55,12 @@ class UrlHelper extends Component
         return null;
     }
 
+    public function getImageType($url){
+        if(preg_match("/(?<=\.)[^.]+$/is", $url, $match))
+            return $match[0];
+        return false;
+    }
+
     /**
      * Function for getting full url from 2 parts
      * 1st part($url) = relative or full url that we need to return full
