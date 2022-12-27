@@ -122,6 +122,7 @@ class WebsiteCheckerService implements CheckerObserver
     private function setFaviconCheckResults(\app\models\Sites $websiteModel, $imageUrlStr)
     {
         Yii::$app->l->log('Favicon result for ' . $websiteModel->url . ' given: ' . $imageUrlStr);
+//        ImagesDownloader::saveSiteFavicon($imageUrlStr, $websiteModel->url);
         $websiteModel->image_url = $imageUrlStr;
         $websiteModel->is_image_setted = 1;
         return $websiteModel->save() ? true : $websiteModel->getErrors();

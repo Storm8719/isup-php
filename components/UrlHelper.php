@@ -55,10 +55,17 @@ class UrlHelper extends Component
         return null;
     }
 
-    public function getImageType($url){
-        if(preg_match("/(?<=\.)[^.]+$/is", $url, $match))
-            return $match[0];
-        return false;
+    /**
+     * @param string $url
+     * @return string|null
+     */
+    public function getImageFormat($url){
+        if(preg_match("/(?<=\.)[^.]+$/is", parse_url($url)['path'], $match)) {
+            $allowedFormats = ['png', 'svg', 'ico', 'jpg', 'jpeg', 'gif', 'webp'];
+            if(in_array($match[0], $allowedFormats))
+                return $match[0];
+        }
+        return null;
     }
 
     /**
