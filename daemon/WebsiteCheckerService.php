@@ -82,7 +82,7 @@ class WebsiteCheckerService implements CheckerObserver
         $responseInfo = $request->getResponseInfo();
         $websiteModel = $request->getExtraInfo()['model'];
         Yii::$app->l->log('Html Check Result for ' . $websiteModel->url . ' given');
-        $parser = new HtmlParser($request->getResponseText(), $responseInfo['url']);
+        $parser = new HtmlParser($request->getResponseText(), $responseInfo['url'], $responseInfo['content_type']);
         $websiteModel->last_http_code = (int)$responseInfo['http_code'];
         $websiteModel->updated_at = time();
 

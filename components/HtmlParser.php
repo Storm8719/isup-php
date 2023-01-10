@@ -12,16 +12,24 @@ class HtmlParser
     public $htmlText = null;
     public $url = null;
     private $headTagHtml = null;
+    private $charset;
 
-    public function __construct($html, $url)
+    public function __construct($html, $url, $contentType = null)
     {
-        $this->setData($html, $url);
+        $this->setData($html, $url, $contentType);
     }
 
-    public function setData($html = null, $url = null){
+    public function setData($html = null, $url = null, $contentType = null){
         $this->htmlText = $html ? $html : $this->htmlText;
         $this->url = $url ? $url : $this->url;
         $this->setHeadTagHtml();
+        $this->charset = $this->getCharsetFromContentType($contentType);
+    }
+
+    private function getCharsetFromContentType($contentType){
+        if(preg_match('~.*?(windows-1251|utf-8).*?~is', $contentType, $match))
+            return $match[1];
+        return "utf-8";
     }
 
     public function getFaviconUrlCandidatesArray(){
@@ -29,11 +37,17 @@ class HtmlParser
     }
 
     public function getDescription(){
-        return Encoding::toUTF8($this->getDescriptionFromHtml());
+        return $this->convertStrByCharset($this->getDescriptionFromHtml());
     }
 
     public function getTitle(){
-        return Encoding::toUTF8($this->getTitleFromHtml());
+        return $this->convertStrByCharset($this->getTitleFromHtml());
+    }
+
+    private function convertStrByCharset($str){
+        if($this->charset == 'utf-8')
+            return Encoding::toUTF8($str);
+        return mb_convert_encoding($str, "utf-8", "windows-1251");
     }
 
     private function setHeadTagHtml(){
