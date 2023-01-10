@@ -35,3 +35,4 @@ tests/_support/_generated
 #other
 dev.txt
 web/images/favicons
+node/node_modules
