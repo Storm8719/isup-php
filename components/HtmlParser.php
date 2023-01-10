@@ -27,6 +27,7 @@ class HtmlParser
     }
 
     private function getCharsetFromContentType($contentType){
+        //TODO Add all charsets
         if(preg_match('~.*?(windows-1251|utf-8).*?~is', $contentType, $match))
             return $match[1];
         return "utf-8";
