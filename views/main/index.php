@@ -70,7 +70,7 @@ function statusCodeFilter($code)
                     <div class="site-box">
                         <div>
                             <div class="fav-box flex justify-center">
-                                <img src="<?php echo iconFilter($site['image_url']) ?>" class="site-fav"
+                                <img loading="lazy" src="<?php echo iconFilter($site['image_url']) ?>" class="site-fav"
                                      alt="<?php echo $site['url'] ?> logo"/>
                             </div>
                             <div class="site-name"><?php echo $site['url'] ?></div>
