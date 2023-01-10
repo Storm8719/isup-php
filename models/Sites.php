@@ -27,6 +27,9 @@ use Yii;
  * @property int|null $created_by
  * @property int $created_at
  * @property int|null $updated_at
+ * @property string|null $screenshot_url
+ * @property int|null $screenshot_last_start_to_update
+ * @property int|null $screenshot_updated_at
  */
 class Sites extends \yii\db\ActiveRecord
 {
@@ -45,7 +48,7 @@ class Sites extends \yii\db\ActiveRecord
     {
         return [
             [['url', 'status', 'created_at'], 'required'],
-            [['status', 'last_http_code', 'pagesize', 'created_by', 'created_at', 'updated_at'], 'integer'],
+            [['status', 'last_http_code', 'pagesize', 'created_by', 'created_at', 'updated_at', 'screenshot_last_start_to_update', 'screenshot_updated_at'], 'integer'],
             [['header', 'description', 'info', 'additional_content', 'image_url', 'scheme', 'title', 'image_url_options', 'redirect_to'], 'string'],
             [['url'], 'string', 'max' => 255],
         ];
@@ -77,6 +80,9 @@ class Sites extends \yii\db\ActiveRecord
             'created_by' => Yii::t('app', 'Created By'),
             'created_at' => Yii::t('app', 'Created At'),
             'updated_at' => Yii::t('app', 'Updated At'),
+            'screenshot_url' => Yii::t('app', 'screenshot_url'),
+            'screenshot_last_start_to_update' => Yii::t('app', 'screenshot_last_start_to_update'),
+            'screenshot_updated_at' => Yii::t('app', 'screenshot_updated_at'),
         ];
     }
     /*
