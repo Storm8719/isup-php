@@ -10,19 +10,24 @@ const makeScreenshot = async (url, imgName, browser) => {
     })
 
     // await page.goto(url, {waitUntil: 'networkidle0', timeout: 0});
-    await page.goto(url, {waitUntil: 'load', timeout: 0});
-    const ee = await page.waitForResponse(response => response.status() === 200);
-    console.log(ee);
+    // console.time('FirstWay'+imgName);
+    const response = await page.goto(url, {timeout: 0});
+    // const navigationPromise = page.waitForNavigation({ waitUntil: ['networkidle2'] });
+    const responseInfo = {
+        timing:response.timing(),
+        status: response.status(),
+        headers: response.headers()
+    }
 
-    const resultjs = await page.evaluate(() => {
+    const js_result_from_page = await page.evaluate(() => {
+        const meta_desc = document.querySelector('meta[name="description"]');
+        const description = (meta_desc !== null && meta_desc.content) ? meta_desc.content : null;
+
         return {
             title:document.title,
-            description: document.querySelector('meta[name="description"]').content,
-
+            description: description,
         };
     });
-
-    console.log(resultjs);
 
     await page.screenshot({
         path: './' + imgName + '.png',
@@ -30,9 +35,8 @@ const makeScreenshot = async (url, imgName, browser) => {
         fullPage: true
     })
 
-    console.log(imgName + ' done');
-
     await page.close();
+    return {...js_result_from_page, ...responseInfo};
 }
 
 (async () => {
@@ -40,20 +44,22 @@ const makeScreenshot = async (url, imgName, browser) => {
     const actions = [];
 
     const listUrls = [
-        'http://example.com/',
-        'https://example.com/www'
+        'https://example.com',
+        'https://www.php.net'
     ];
 
     let i = 0;
     listUrls.forEach((el) => {
         i++;
-        actions.push(makeScreenshot(el, 'page-' + i, browser).then(() => {
-            console.log(i);
-            return i;
+        actions.push(makeScreenshot(el, 'page-' + i, browser).then((result) => {
+            // console.log(result);
+            return result;
         }));
     })
 
     const result = await Promise.all(actions);
     console.log(result);
+
+
     await browser.close();
 })();
