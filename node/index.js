@@ -28,17 +28,17 @@ class worker
         }
     }
 
-    makeScreenshot = (url, imgName) => {
+    makeScreenshot = (id, url, imgName) => {
         return new Promise((resolve, reject) => {
             const resultCall = (res) => {
                 resolve(res)
             }
-            this.queue.enqueue({url, imgName, callback:resultCall});
+            this.queue.enqueue({id, url, imgName, callback:resultCall});
         });
     }
 
 
-    execute = async ({url, imgName, callback}) => {
+    execute = async ({id, url, imgName, callback}) => {
         this.pagesOpened++;
         const page = await this.browser.newPage();
 
@@ -76,9 +76,9 @@ class worker
         this.pagesOpened--;
 
         this.resolveQueue();
-        console.log(`DONE ${imgName}`);
+        // console.log(`DONE ${imgName}`);
 
-        callback({...js_result_from_page, ...responseInfo});
+        callback({id, url, imgName, ...js_result_from_page, ...responseInfo});
     }
 }
 
@@ -86,7 +86,7 @@ class worker
     const checker = new worker();
 
     for (let i = 2; i !== 0; i--) {
-        checker.makeScreenshot('http://isup/main/timeout?time='+i, 'page-'+i).then((res)=>{
+        checker.makeScreenshot(i ,'http://isup/main/timeout?time='+i, 'page-'+i).then((res)=>{
             console.log(res);
         })
         // console.log(i)
