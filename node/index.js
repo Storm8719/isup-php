@@ -79,16 +79,15 @@ class worker
         console.log(`DONE ${imgName}`);
 
         callback({...js_result_from_page, ...responseInfo});
-        return {...js_result_from_page, ...responseInfo};
     }
 }
 
-(async () => {
+(() => {
     const checker = new worker();
 
-    for (let i = 16; i !== 0; i--) {
+    for (let i = 2; i !== 0; i--) {
         checker.makeScreenshot('http://isup/main/timeout?time='+i, 'page-'+i).then((res)=>{
-            // console.log(res);
+            console.log(res);
         })
         // console.log(i)
     }
