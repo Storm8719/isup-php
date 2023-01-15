@@ -41,6 +41,14 @@ class MainController extends \yii\web\Controller
         return $this->render('index', ['sites' => $sites]);
     }
 
+    public function actionTimeout($time){
+
+        echo $time;
+        sleep(rand(1, 5));
+        echo '-----';
+        die;
+    }
+
     public function actionSite($site)
     {
         $host = Yii::$app->urlHelper->getUrlHost($site);
