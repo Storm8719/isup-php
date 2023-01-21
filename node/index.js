@@ -1,4 +1,27 @@
 const worker = require('./worker');
+const MicroMQ = require('micromq');
+
+
+const app = new MicroMQ({
+    name: 'node-checker-with-screenshots',
+    rabbit: {
+        url: 'amqp://guest:guest@localhost:5672',
+    },
+});
+
+
+const checker = new worker();
+
+app.get('/check-website', (req, res) => {
+
+    checker.makeScreenshot(1 ,'http://isup/main/timeout?time='+1, 'page-'+1).then((res)=>{
+        console.log(res);
+    })
+
+    res.json({status:"ok"});
+
+
+});
 
 
 (() => {
