@@ -12,7 +12,7 @@ class GetController extends \yii\console\Controller
     public function actionIndex()
     {
         $q = new RabbitMQQ('localhost', 5672, 'guest', 'guest');
-        $q->subscribeOnMessages('test', function($msg){
+        $q->subscribeOnMessages('check-and-screen-results', function($msg){
             var_dump($msg);
         });
     }
