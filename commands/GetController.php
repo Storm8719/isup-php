@@ -13,7 +13,7 @@ class GetController extends \yii\console\Controller
     {
         $q = new RabbitMQQ('localhost', 5672, 'guest', 'guest');
         $q->subscribeOnMessages('test', function($msg){
-            echo $msg.PHP_EOL;
+            var_dump($msg);
         });
     }
 
