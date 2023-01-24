@@ -7,21 +7,40 @@ class RabbitMQQ{
     channel;
 
     constructor(amqpUrl) {
+        this.init(amqpUrl)
+    }
+
+    init(amqpUrl){
         amqp.connect(amqpUrl, (error0, connection) => {
             if (error0) {
-                throw error0;
+                console.log('Failed to connect. Try to reconnect in 1s')
+                setTimeout(()=> {
+                    this.init(amqpUrl);
+                },1000);
+                return false;
             }
             this.connection = connection;
             connection.createChannel((error1, channel) => {
 
                 this.channel = channel;
+                this.channel.on('close', () => {
+                    this.initialized = false;
+                    console.log('Connection closed... Waiting for initialization...');
+                    this.init(amqpUrl);
+                });
 
                 if (error1) {
-                    throw error0;
+                    console.log('Channel not created. Try to reconnect in 1s')
+                    setTimeout(()=> {
+                        this.init(amqpUrl);
+                    },1000);
+                    return false;
                 }
                 this.initialized = true;
+                console.log('Connection success');
             });
         });
+
     }
 
     send(toQueueName, message){
