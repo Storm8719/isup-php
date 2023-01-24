@@ -13,6 +13,10 @@ class SendController extends \yii\console\Controller
     {
         $q = new RabbitMQQ('localhost', 5672, 'guest', 'guest');
         $q->send('check-and-screen', ['id' => 5,'url' => 'http://isup/', 'imgName'=> 'www'] );
+
+        $q->subscribeOnMessages('check-and-screen-results', function($msg){
+            var_dump($msg);
+        });
 //        $q->send('test', 'Hello PHP');
 //        $q->send('test', 'Hello JS PHP');
 //        $q->send('test', 'Hello JS PHP');

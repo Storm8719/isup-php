@@ -1,43 +1,72 @@
 const amqp = require('amqplib/callback_api');
+const Queue = require('./queue');
 
 class RabbitMQQ{
 
     initialized = false;
     connection;
     channel;
+    sendMessagesQueue;
 
     constructor(amqpUrl) {
-        this.init(amqpUrl)
+        this.init(amqpUrl);
+        let i = 0;
+        //TODO Fix bug with missing messages
+        setInterval(()=>{
+            this.send('check-and-screen-results', i);
+            i++;
+        }, 1000);
+    }
+
+    deququeMessagesToSend(){
+        if(this.sendMessagesQueue.length > 0){
+            const {toQueueName, message} = this.sendMessagesQueue.dequeue();
+            this.send(toQueueName, message);
+            this.deququeMessagesToSend();
+        }
     }
 
     init(amqpUrl){
+
+        this.sendMessagesQueue = new Queue();
+
+        const onClosedConnectionEventsHandler = () => {
+            this.initialized = false;
+            console.log('Connection closed... Waiting for initialization...');
+            this.init(amqpUrl);
+        }
+
+        const reinitAfterDelay = () => {
+            setTimeout(()=> {
+                this.init(amqpUrl);
+            },1000);
+        }
+
+
+
         amqp.connect(amqpUrl, (error0, connection) => {
+
             if (error0) {
                 console.log('Failed to connect. Try to reconnect in 1s')
-                setTimeout(()=> {
-                    this.init(amqpUrl);
-                },1000);
+                reinitAfterDelay();
                 return false;
             }
+
             this.connection = connection;
             connection.createChannel((error1, channel) => {
 
                 this.channel = channel;
-                this.channel.on('close', () => {
-                    this.initialized = false;
-                    console.log('Connection closed... Waiting for initialization...');
-                    this.init(amqpUrl);
-                });
+                this.channel.on('close', onClosedConnectionEventsHandler);
+                this.channel.on('error', onClosedConnectionEventsHandler);
 
                 if (error1) {
                     console.log('Channel not created. Try to reconnect in 1s')
-                    setTimeout(()=> {
-                        this.init(amqpUrl);
-                    },1000);
+                    reinitAfterDelay();
                     return false;
                 }
                 this.initialized = true;
                 console.log('Connection success');
+                this.deququeMessagesToSend();
             });
         });
 
@@ -51,9 +80,7 @@ class RabbitMQQ{
             console.log("[x] sended to queue "+ toQueueName + " message:" + JSON.stringify(message));
             this.channel.publish('', toQueueName, Buffer.from(JSON.stringify(message)));
         }else{
-            setTimeout(()=>{
-                this.send(toQueueName, message);
-            }, 100);
+            this.sendMessagesQueue.enqueue({toQueueName, message});
         }
     }
 
