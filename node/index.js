@@ -10,7 +10,7 @@ const checkAndScreenHandler = ({id, url, imgName = null}) => {
 
     imgName = imgName ? imgName : `image-${id}`;
 
-    checker.makeScreenshot(id ,url, imgName).then((res)=>{
+    checker.makeScreenshot(id, url, imgName).then((res)=>{
         rabbitTransportService.send('check-and-screen-results', res);
     })
 }

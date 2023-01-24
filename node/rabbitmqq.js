@@ -38,20 +38,20 @@ class RabbitMQQ{
         }
     }
 
-    subscribeOnMessages(messagesToListenQueueName, callback){
+    subscribeOnMessages(listenQueueName, callback){
         if(this.initialized){
-            this.channel.assertQueue(messagesToListenQueueName, {
+            this.channel.assertQueue(listenQueueName, {
                 durable: false
             });
 
-            this.channel.consume(messagesToListenQueueName, function(msg) {
+            this.channel.consume(listenQueueName, function(msg) {
                 callback(JSON.parse(msg.content.toString()));
             }, {
                 noAck: true
             });
         }else{
             setTimeout(()=>{
-                this.subscribeOnMessages(messagesToListenQueueName, callback);
+                this.subscribeOnMessages(listenQueueName, callback);
             }, 100);
         }
     }
