@@ -14,12 +14,18 @@ class RabbitMQQ
 
     public function __construct($host, $port, $user, $password)
     {
+        $this->init($host, $port, $user, $password);
+    }
+
+    protected function init($host, $port, $user, $password){
         try {
             $this->connection = new AMQPStreamConnection($host, $port, $user, $password);
+            $this->channel = $this->connection->channel();
         } catch (\Exception $e) {
-            var_dump($e);
+            \Yii::$app->l->log("Connection to rabbit failed. Try to reconnect in 1s...");
+            sleep(1);
+            $this->init($host, $port, $user, $password);
         }
-        $this->channel = $this->connection->channel();
     }
 
     public function send($toQueueName, $message){
