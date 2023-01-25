@@ -9,13 +9,13 @@ class RabbitMQQ{
     sendMessagesQueue;
 
     constructor(amqpUrl) {
+        this.sendMessagesQueue = new Queue();
         this.init(amqpUrl);
-        let i = 0;
-        //TODO Fix bug with missing messages
-        setInterval(()=>{
-            this.send('check-and-screen-results', i);
-            i++;
-        }, 1000);
+        // let i = 0;
+        // setInterval(()=>{
+        //     this.send('check-and-screen-results', i);
+        //     i++;
+        // }, 1000);
     }
 
     dequeueMessagesToSend(){
@@ -27,8 +27,6 @@ class RabbitMQQ{
     }
 
     init(amqpUrl){
-
-        this.sendMessagesQueue = new Queue();
 
         const onClosedConnectionEventsHandler = () => {
             this.initialized = false;
