@@ -18,11 +18,11 @@ class RabbitMQQ{
         }, 1000);
     }
 
-    deququeMessagesToSend(){
+    dequeueMessagesToSend(){
         if(this.sendMessagesQueue.length > 0){
             const {toQueueName, message} = this.sendMessagesQueue.dequeue();
             this.send(toQueueName, message);
-            this.deququeMessagesToSend();
+            this.dequeueMessagesToSend();
         }
     }
 
@@ -66,7 +66,7 @@ class RabbitMQQ{
                 }
                 this.initialized = true;
                 console.log('Connection success');
-                this.deququeMessagesToSend();
+                this.dequeueMessagesToSend();
             });
         });
 
