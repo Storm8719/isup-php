@@ -11,7 +11,7 @@ use yii\bootstrap4\Html;
 $this->title = 'Add website';
 ?>
 
-<div class="container flex justify-center p-5 sm:p-10">
+<div class="container flex justify-center p-5 sm:p-10 flex-col items-center">
 
         <?php if ($from_404):?>
             <p>Website not found, but you can add it right now</p>
