@@ -31,7 +31,7 @@ class SendController extends \yii\console\Controller
 
 
         $q = new RabbitMQQ('localhost', 5672, 'guest', 'guest');
-        $q->send('MOL.EVENT.desktop-pv134n5-6356', $obj);
+        $q->send('MOL.EVENT.node2', $obj);
 
 
 //        var_dump($obj);
