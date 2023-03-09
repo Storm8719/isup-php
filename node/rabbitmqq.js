@@ -1,27 +1,28 @@
 const amqp = require('amqplib/callback_api');
 const Queue = require('./queue');
 
-class RabbitMQTransporter{
-
-    initialized = false;
-    connection;
-    channel;
-    sendMessagesQueue;
+class RabbitMQTransporter {
 
     constructor(amqpUrl) {
+        this.initialized = false;
+        this.connection = null;
+        this.channel = null;
+        this.assertedExchanges = new Set();
+        this.assertedQueues = new Set();
+        this.bindings = new Set();
         this.sendMessagesQueue = new Queue();
         this.init(amqpUrl);
     }
 
-    dequeueMessagesToSend(){
-        if(this.sendMessagesQueue.length > 0){
+    dequeueMessagesToSend() {
+        if (this.sendMessagesQueue.length > 0) {
             const {exchangeName, exchangeOptions, listenQueueName, queueOptions, message} = this.sendMessagesQueue.dequeue();
             this.send({exchangeName, exchangeOptions, listenQueueName, queueOptions, message});
             this.dequeueMessagesToSend();
         }
     }
 
-    init(amqpUrl){
+    init(amqpUrl) {
 
         const onClosedConnectionEventsHandler = () => {
             this.initialized = false;
@@ -30,11 +31,10 @@ class RabbitMQTransporter{
         }
 
         const reinitAfterDelay = () => {
-            setTimeout(()=> {
+            setTimeout(() => {
                 this.init(amqpUrl);
-            },1000);
+            }, 1000);
         }
-
 
 
         amqp.connect(amqpUrl, (error0, connection) => {
@@ -65,51 +65,60 @@ class RabbitMQTransporter{
 
     }
 
-    send({exchangeName, exchangeOptions = {}, listenQueueName, queueOptions = {}, message}){
-        if(this.initialized){
 
+    assertAction({exchangeName, exchangeOptions = {}, queueName, queueOptions = {}}) {
+
+        if (!this.assertedExchanges.has(exchangeName)) {
+            console.log(`Asserting exchange `, exchangeName);
             this.channel.assertExchange(exchangeName, "fanout", exchangeOptions);
+            this.assertedExchanges.add(exchangeName);
+        }
 
-            const queueName = `${exchangeName}.${listenQueueName}`;
-
+        if (!this.assertedQueues.has(queueName)) {
+            console.log(`Asserting queues `, queueName);
             this.channel.assertQueue(queueName, queueOptions);
+            this.assertedQueues.add(queueName);
+        }
 
+        if (!this.bindings.has(`${exchangeName}-${queueName}`)) {
+            console.log(`Asserting binding `, `${exchangeName}-${queueName}`);
             this.channel.bindQueue(queueName, exchangeName, "");
+            this.bindings.add(`${exchangeName}-${queueName}`);
+        }
 
+    }
+
+
+    send({exchangeName, exchangeOptions = {}, queueName, queueOptions = {}, message}) {
+        if (this.initialized) {
+            queueName = `${exchangeName}.${queueName}`;
+            this.assertAction({exchangeName, exchangeOptions, queueName, queueOptions});
             this.channel.publish(exchangeName, queueName, Buffer.from(JSON.stringify(message)));
-
-        }else{
-            this.sendMessagesQueue.enqueue({exchangeName, exchangeOptions, listenQueueName, queueOptions, message});
+        } else {
+            this.sendMessagesQueue.enqueue({exchangeName, exchangeOptions, queueName, queueOptions, message});
         }
     }
 
 
-    subscribeOnMessages({exchangeName, exchangeOptions = {}, listenQueueName, queueOptions = {}, callback}){
-        if(this.initialized){
-
-            this.channel.assertExchange(exchangeName, "fanout", exchangeOptions);
-
-            const queueName = `${exchangeName}.${listenQueueName}`;
-
-            this.channel.assertQueue(queueName, queueOptions);
-
-            this.channel.bindQueue(queueName, exchangeName, "");
-
-            this.channel.consume(queueName, function(msg) {
+    subscribeOnMessages({exchangeName, exchangeOptions = {}, queueName, queueOptions = {}, callback}) {
+        if (this.initialized) {
+            queueName = `${exchangeName}.${queueName}`;
+            this.assertAction({exchangeName, exchangeOptions, queueName, queueOptions});
+            this.channel.consume(queueName, function (msg) {
                 callback(JSON.parse(msg.content.toString()));
             }, {
                 noAck: true
             })
 
-        }else{
-            setTimeout(()=>{
-                this.subscribeOnMessages({exchangeName, exchangeOptions, listenQueueName, queueOptions, callback});
+        } else {
+            setTimeout(() => {
+                this.subscribeOnMessages({exchangeName, exchangeOptions, queueName, queueOptions, callback});
             }, 100);
         }
     }
 
-    stop(){
-        if(this.initialized){
+    stop() {
+        if (this.initialized) {
             this.connection.close();
             return true;
         }
