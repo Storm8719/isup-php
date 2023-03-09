@@ -1,18 +1,25 @@
-const worker = require('./worker');
+// const worker = require('./worker');
 const rabbitmqq = require('./rabbitmqq');
 
 
 const rabbitTransportService = new rabbitmqq('amqp://guest:guest@localhost:5672');
 
-const checker = new worker();
 
-const checkAndScreenHandler = ({id, url, imgName = null}) => {
-
-    imgName = imgName ? imgName : `image-${id}`;
-
-    checker.makeScreenshot(id, url, imgName).then((res)=>{
-        rabbitTransportService.send('check-and-screen-results', res);
-    })
+const subscribeConf = {
+    exchangeName: "screenshot.make",
+    listenQueueName: "make",
+    callback: (res) => {
+        console.log(res);
+    }
 }
 
-rabbitTransportService.subscribeOnMessages('check-and-screen', checkAndScreenHandler);
+rabbitTransportService.subscribeOnMessages(subscribeConf);
+
+
+const sendConf = {
+    exchangeName: "screenshot.make",
+    listenQueueName: "make",
+    message: "Test!"
+}
+
+rabbitTransportService.send(sendConf);

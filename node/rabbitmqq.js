@@ -1,7 +1,7 @@
 const amqp = require('amqplib/callback_api');
 const Queue = require('./queue');
 
-class RabbitMQQ{
+class RabbitMQTransporter{
 
     initialized = false;
     connection;
@@ -11,17 +11,12 @@ class RabbitMQQ{
     constructor(amqpUrl) {
         this.sendMessagesQueue = new Queue();
         this.init(amqpUrl);
-        // let i = 0;
-        // setInterval(()=>{
-        //     this.send('check-and-screen-results', i);
-        //     i++;
-        // }, 1000);
     }
 
     dequeueMessagesToSend(){
         if(this.sendMessagesQueue.length > 0){
-            const {toQueueName, message} = this.sendMessagesQueue.dequeue();
-            this.send(toQueueName, message);
+            const {exchangeName, exchangeOptions, listenQueueName, queueOptions, message} = this.sendMessagesQueue.dequeue();
+            this.send({exchangeName, exchangeOptions, listenQueueName, queueOptions, message});
             this.dequeueMessagesToSend();
         }
     }
@@ -70,32 +65,45 @@ class RabbitMQQ{
 
     }
 
-    send(toQueueName, message){
+    send({exchangeName, exchangeOptions = {}, listenQueueName, queueOptions = {}, message}){
         if(this.initialized){
-            this.channel.assertQueue(toQueueName, {
-                durable: false
-            });
-            console.log("[x] sended to queue "+ toQueueName + " message:" + JSON.stringify(message));
-            this.channel.publish('', toQueueName, Buffer.from(JSON.stringify(message)));
+
+            this.channel.assertExchange(exchangeName, "fanout", exchangeOptions);
+
+            const queueName = `${exchangeName}.${listenQueueName}`;
+
+            this.channel.assertQueue(queueName, queueOptions);
+
+            this.channel.bindQueue(queueName, exchangeName, "");
+
+            this.channel.publish(exchangeName, queueName, Buffer.from(JSON.stringify(message)));
+
         }else{
-            this.sendMessagesQueue.enqueue({toQueueName, message});
+            this.sendMessagesQueue.enqueue({exchangeName, exchangeOptions, listenQueueName, queueOptions, message});
         }
     }
 
-    subscribeOnMessages(listenQueueName, callback){
-        if(this.initialized){
-            this.channel.assertQueue(listenQueueName, {
-                durable: false
-            });
 
-            this.channel.consume(listenQueueName, function(msg) {
+    subscribeOnMessages({exchangeName, exchangeOptions = {}, listenQueueName, queueOptions = {}, callback}){
+        if(this.initialized){
+
+            this.channel.assertExchange(exchangeName, "fanout", exchangeOptions);
+
+            const queueName = `${exchangeName}.${listenQueueName}`;
+
+            this.channel.assertQueue(queueName, queueOptions);
+
+            this.channel.bindQueue(queueName, exchangeName, "");
+
+            this.channel.consume(queueName, function(msg) {
                 callback(JSON.parse(msg.content.toString()));
             }, {
                 noAck: true
-            });
+            })
+
         }else{
             setTimeout(()=>{
-                this.subscribeOnMessages(listenQueueName, callback);
+                this.subscribeOnMessages({exchangeName, exchangeOptions, listenQueueName, queueOptions, callback});
             }, 100);
         }
     }
@@ -108,4 +116,4 @@ class RabbitMQQ{
     }
 }
 
-module.exports = RabbitMQQ;
+module.exports = RabbitMQTransporter;
